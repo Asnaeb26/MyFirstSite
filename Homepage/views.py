@@ -211,6 +211,11 @@ def randomiser(request):
         }
     )
 
+
 def vot_ono_cho():
-    dfdfdfd
     return 222
+
+
+def proverka(request):
+    context = {'1': 2}
+    return render(request, 'Homepage/homepage.html', context)
