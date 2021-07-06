@@ -210,3 +210,8 @@ def randomiser(request):
             'people': people
         }
     )
+
+
+def vot_ono_cho(request):
+    dfdfdfdf
+
