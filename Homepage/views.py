@@ -213,5 +213,5 @@ def randomiser(request):
 
 
 def proverka(request):
-    context = {'1': 1}
+    context = {'1': 2}
     return render(request, 'Homepage/homepage.html', context)
