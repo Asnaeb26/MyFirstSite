@@ -210,3 +210,8 @@ def randomiser(request):
             'people': people
         }
     )
+
+
+def proverka(request):
+    context = {'1': 1}
+    return render(request, 'Homepage/homepage.html', context)
