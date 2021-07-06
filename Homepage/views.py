@@ -2,6 +2,17 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from Homepage.models import *
+import random
+from datetime import datetime
+from django.utils.translation import ugettext as _, activate
+
+
+def main(request):
+    activate(random.choice(['en', 'by']))
+    return render(
+        'Homepage/homepage.html', {'Hello': _('Привет мир')}
+    )
 
 
 def index(request):
@@ -12,20 +23,12 @@ def homepage(request):
     return render(request, "Homepage/homepage.html")
 
 
-def about(request):
-    return render(request, "Homepage/about-us.html")
-
-
-def contact(request):
-    return render(request, "Homepage/contacts.html")
-
-
-def task1(request):
-    return render(request, 'Homepage/task1.html')
+def exchange_rates(request):
+    return render(request, 'Homepage/exchange_rates.html')
 
 
 def task2(request):
-    return render(request, 'Homepage/task2.html')
+    return render(request, 'Homepage/user_account.html')
 
 
 def error(request):
@@ -41,13 +44,14 @@ def do_registration(request):
 
 
 def register(request):
-    User.objects.create_user(
+    new_user = User.objects.create_user(
         request.POST['username'],
         password=request.POST['password'],
         first_name=' ',
         last_name=' ',
         email='',
     )
+    login(request, new_user)
     return HttpResponseRedirect('/')
 
 
@@ -58,7 +62,9 @@ def login_user(request):
     )
     if user is None:
         pass
-        return render(request, 'Homepage/error_login.html')
+        # return render(request, 'Homepage/error_login.html')
+        # HttpResponse('Такого пользователя не существует')
+        return render(request, 'Homepage/Log_in.html', {'error': True})
     else:
         login(request, user)
         return HttpResponseRedirect('/')
@@ -92,4 +98,79 @@ def uniq_user(request):
 
     # except IntegrityError
     return JsonResponse(response)
+
+
+def user_account(request):
+    return render(request, 'Homepage/user_account.html')
+
+
+def two_list(ls1, ls2):
+    ls3 = []
+    for i in ls1:
+        if i in ls2:
+            ls3.append(i)
+    return ls3
+
+
+def add_money(request):
+    SpentMoney(
+        add_money=request.POST['add_money'],
+        comments=request.POST['comments'],
+    ).save()
+    return HttpResponseRedirect('/')
+
+
+def history(request):
+    ls = SpentMoney.objects.values()
+    total = 0
+    context = {}
+    for i in SpentMoney.objects.values():
+        total += i['add_money']
+    n = 0
+    while n < len(ls):
+        current_dict = SpentMoney.objects.values()
+        print(current_dict[n])
+        context['comments' + str((n + 1))] = context[ls[n]['comments']]
+        context['add_money' + str((n + 1))] = ls[n]['add_money']
+        n += 1
+    print(context)
+    return render(request, 'Homepage/history.html', context=context)
+
+
+# def dollars(request):
+#     get_response()
+#     return render(request, 'Homepage/exchange_rates.html')
+
+
+# def experiment(request):
+#     size = 300000
+#     slice_size = 500
+#     Person3.objects.all().delete()
+#     for _ in range(int(size / slice_size)):
+#         slice = []
+#         for _ in range(slice_size):
+#             slice.append(
+#                 Person3(
+#                     name=str(random.randint(1, 1000)),
+#                     credit_card_number=str(
+#                         random.randint(10**70, 10**80)
+#                     )
+#                 )
+#             )
+#         Person3.objects.bulk_create(slice, slice_size)
+#
+#     sum = 0
+#     for _ in range(100):
+#         start = datetime.now()
+#         list(Person3.objects.filter(
+#             credit_card_number=random.randint(
+#                 10**70, 10**80
+#             )
+#         ))
+#         delta = (datetime.now() - start).total_seconds()
+#         sum = sum + delta
+#     print("Время выполнения 100 запрсосов: " +
+#           str(sum) + ' секунд')
+#
+#     return HttpResponse('Ok')
 

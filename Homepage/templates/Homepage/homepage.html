@@ -1,19 +1,61 @@
-{% extends "Homepage/index.html" %}
-{% block header %}
-    <h1><font size="80"><center>Главная страница</center></font></h1>
-{% endblock %}
-{% block content1 %}
-    <center>Самые популярные </center>
-{% endblock %}
-{% block content2 %}
-    <h2><center>
-        <button id="task_ajax">Кнопка для проверки</button>
+<!doctype html>
+<html lang="ru en">
+{% load i18n %}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Сайт</title>
+    <link rel="stylesheet" type="text/css" href="../../static/css/homepage.css">
+    <link rel="shortcut icon" href="{% static "Homepage/wallet_icon.svg" %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+</head>
+<body class="container">
+    <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+        <img src="{% static "Homepage/wallet_icon.svg" %}" class="WM_logo">
+          <span class="fs-3">Waste Money</span>
+      </a>
+`
+      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+          <a class="me-3 py-2 text-dark text-decoration-none" href="/">Homepage</a>
+          <a class="me-3 py-2 text-dark text-decoration-none" href="/history">История затрат</a>
+          <a class="me-3 py-2 text-dark text-decoration-none" href="/exchange_rates">Курсы валют</a>
+          {% if request.user.is_authenticated %}
+              <button type="button" class="btn btn-outline-primary"><a href="/user_account">{{ user }}</a></button>
+              <button type="button" class="btn btn-outline-primary"><a href="/logout">Выйти</a></button>
+          {% else %}
+              <button type="button" class="btn btn-outline-primary"><a href="/login">Войти</a></button>
+          {% endif %}
+      </nav>
+    </div>
+    <div class="mx-auto">
+        <div class="current_month mx-auto">
+        1 Июля - 31 июля
+        </div>
+        <form action="add_money" method="POST">
+            <input type="number" min="1" id="add_money" name="add_money" placeholder="Введите сумму" required><br>
+            <input type="text" id="comments" name="comments" placeholder="Комментарий"><br>
+            <button type="submit" id="add_money_button">+</button>
+        </form>
+        <a href="history.html"></a>
 
-    </center></h2>
-{% endblock %}
-{% block content3 %}
-    <center>Здесь будет ссылка на форум</center>
-{% endblock %}
-{% block footer %}
-    <center>Подведение итогов</center>
-{% endblock %}
+{#        <p>#}
+{#            {{ Hello }}#}
+{#        </p>#}
+{#        <p>#}
+{#            {% trans 'Здарова отец' %}#}
+{#        </p>#}
+        <div class="diagram mx-auto">
+            <div class="diagram_elem">
+                <div class="column_categ category-1"></div>
+                <div class="column_categ category-2"></div>`
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

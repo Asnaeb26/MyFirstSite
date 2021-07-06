@@ -1,6 +1,6 @@
 {% extends "Homepage/index.html" %}
 {% block header %}
-    <h1><center>Список контактов</center></h1>
+    <h1><center>История затрат</center></h1>
 {% endblock %}
 {% block content1 %}
     <center>Незначительные новости</center>
@@ -8,8 +8,7 @@
 {% block content2 %}
     <p>
         <ul>
-            <li><b>Телефон</b> - 88005553535</li>
-            <li><b>Электронная почта</b> - training@mail.ru</li>
+            <li><b>Покупка:</b> {{ comments }} <b>Цена - </b> {{ add_money }} <b>BYN</b> </li>
         </ul>
     </p>
 {% endblock %}

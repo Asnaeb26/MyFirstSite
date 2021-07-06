@@ -21,6 +21,6 @@ $(document).ready(function () {
                 if (response.message == 'y') {
                     alert('Такой логин уже есть')
                 }
-            })
+        })
     })
 });
