@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('', views.homepage),
+    # path('', views.randomiser),
     path('history', views.history),
     path('exchange_rates', views.exchange_rates),
     path('task2', views.task2),
@@ -16,6 +17,7 @@ urlpatterns = [
     path('uniq_user', views.uniq_user),
     path('user_account', views.user_account),
     path('add_money', views.add_money),
+    path('randomiser', views.randomiser),
 
     # path('experiment', views.experiment)
 ]

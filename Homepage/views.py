@@ -4,6 +4,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from Homepage.models import *
 import random
+import pickle
+from pymemcache import Client
 from datetime import datetime
 from django.utils.translation import ugettext as _, activate
 
@@ -16,7 +18,8 @@ def main(request):
 
 
 def index(request):
-    return render(request, "Homepage/index.html")
+    context = {'image': User.objects.filter(id=1)[0]}
+    return render(request, "Homepage/homepage.html", context)
 
 
 def homepage(request):
@@ -120,20 +123,32 @@ def add_money(request):
     return HttpResponseRedirect('/')
 
 
+def randomiser(request):
+    names = ['ac', 'fa', 'ek', 'do', 'ga', 'tu']
+    for i in range(4000):
+        a = random.randint(1, 1000)
+        b = random.randint(1, 1000)
+        c = a + b
+        name = random.choice(names) + random.choice(names)
+        Randomiser(name=name, number=c).save()
+    return HttpResponseRedirect('/')
+
+
 def history(request):
     ls = SpentMoney.objects.values()
     total = 0
     context = {}
     for i in SpentMoney.objects.values():
         total += i['add_money']
+    context['total'] = total
     n = 0
-    while n < len(ls):
-        current_dict = SpentMoney.objects.values()
-        print(current_dict[n])
-        context['comments' + str((n + 1))] = context[ls[n]['comments']]
-        context['add_money' + str((n + 1))] = ls[n]['add_money']
-        n += 1
-    print(context)
+    # while n < len(ls):
+    #     current_dict = SpentMoney.objects.values()
+    #     print(current_dict[n])
+    #     context['comments' + str((n + 1))] = context[ls[n]['comments']]
+    #     context['add_money' + str((n + 1))] = ls[n]['add_money']
+    #     n += 1
+    # print(context)
     return render(request, 'Homepage/history.html', context=context)
 
 
@@ -174,3 +189,24 @@ def history(request):
 #
 #     return HttpResponse('Ok')
 
+
+def randomiser(request):
+    client = Client(('localhost', 11211))
+    people = client.get('people')
+    if people is None:
+        people = []
+        for person in Randomiser.objects.all():
+            people.append(person.name)
+        client.set(
+            'people',
+            pickle.dumps(people),
+            expire=60
+        )
+    else:
+        people = pickle.loads(people)
+
+    return render(request, 'Homepage/homepage.html',
+        {
+            'people': people
+        }
+    )
