@@ -8,6 +8,9 @@ import pickle
 from pymemcache import Client
 from datetime import datetime
 from django.utils.translation import ugettext as _, activate
+import time
+import datetime as dt
+import requests
 
 
 def main(request):
@@ -23,7 +26,29 @@ def index(request):
 
 
 def homepage(request):
-    return render(request, "Homepage/homepage.html")
+    ls = []
+    for i in SpentMoney.objects.all():
+        ls.append(i.category)
+    categories = set(ls)
+    context = {'categories': categories}
+    return render(request, 'Homepage/homepage.html', context)
+
+
+def add_money(request):
+    SpentMoney(
+        add_money=request.POST['add_money'],
+        comments=request.POST['comments'],
+        category=request.POST['category']
+    ).save()
+    return HttpResponseRedirect('/')
+
+
+def history(request):
+    total = 0
+    for i in SpentMoney.objects.all():
+        total += i.add_money
+    context = {'products': SpentMoney.objects.all(), 'total': total}
+    return render(request, 'Homepage/history.html', context)
 
 
 def exchange_rates(request):
@@ -115,14 +140,6 @@ def two_list(ls1, ls2):
     return ls3
 
 
-def add_money(request):
-    SpentMoney(
-        add_money=request.POST['add_money'],
-        comments=request.POST['comments'],
-    ).save()
-    return HttpResponseRedirect('/')
-
-
 def randomiser(request):
     names = ['ac', 'fa', 'ek', 'do', 'ga', 'tu']
     for i in range(4000):
@@ -134,22 +151,22 @@ def randomiser(request):
     return HttpResponseRedirect('/')
 
 
-def history(request):
-    ls = SpentMoney.objects.values()
-    total = 0
-    context = {}
-    for i in SpentMoney.objects.values():
-        total += i['add_money']
-    context['total'] = total
-    n = 0
-    # while n < len(ls):
-    #     current_dict = SpentMoney.objects.values()
-    #     print(current_dict[n])
-    #     context['comments' + str((n + 1))] = context[ls[n]['comments']]
-    #     context['add_money' + str((n + 1))] = ls[n]['add_money']
-    #     n += 1
-    # print(context)
-    return render(request, 'Homepage/history.html', context=context)
+def server(request):
+    if 'id' in request.POST:
+        Person3.objects.filter(
+            id=request.POST['id']
+        ).update(
+            name=request.POST['name'],
+            age=int(request.POST['age'])
+        )
+        return JsonResponse({'status': 'OK'})
+    else:
+        ls = []
+        id_new = request.GET['id']
+        Person3.objects.filter(id=id_new)
+        for i in Person3.objects.filter(id=id_new):
+            ls.append({'name': i.name, 'age': i.age})
+        return JsonResponse({'people': ls})
 
 
 # def dollars(request):
@@ -212,10 +229,3 @@ def randomiser(request):
     )
 
 
-def vot_ono_cho():
-    return 222
-
-
-def proverka(request):
-    context = {'1': 2}
-    return render(request, 'Homepage/homepage.html', context)

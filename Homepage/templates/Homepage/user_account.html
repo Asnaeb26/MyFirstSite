@@ -1,20 +1,6 @@
 {% extends "Homepage/index.html" %}
-{% block header %}
-    <h1><center>Данные о пользователе</center></h1>
-{% endblock %}
-{% block content1 %}
-    <center>Настройки </center>
-{% endblock %}
-{% block content2 %}
-    Имя пользователя - {{ user }}<br>
-    Пароль - {{ password }}<br>
-    Дата регистрации - {{ time_create }}<br>
-    Электронная почта - {{ email }}
 
-{% endblock %}
-{% block content3 %}
-    <center>Здесь будет ссылка на форум</center>
-{% endblock %}
-{% block footer %}
-    <center>Подведение итогов</center>
+{% block body %}
+    Имя пользователя - {{ user }}<br>
+
 {% endblock %}

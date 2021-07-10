@@ -1,23 +1,40 @@
 {% extends "Homepage/index.html" %}
-{% block header %}
-    <h1><center>История затрат</center></h1>
-{% endblock %}
-{% block content1 %}
-    <center>Незначительные новости</center>
-{% endblock %}
-{% block content2 %}
+{% block body %}
+    <table>
+        <tr>
+            <th><u>Наименование товара/услуги</u></th>
+            <th><u>Стоимость</u></th>
+            <th><u>Категория</u></th>
+            <th><u>Дата траты</u></th>
+        </tr>
+            {% for product in products %}
+            <tr>
+                <td>
+
+                    {% if product.comments == '' %}
+                        <Комментарий не введен>
+                        {% else %}
+                        {{ product.comments }}
+                    {% endif %}
+                </td>
+                <td><b>{{ product.add_money }}</b> BYN</td>
+                <td>({{ product.category }})</td>
+                <td>({{ product.time_input }})</td>
+            </tr>
+            {% endfor %}
+    </table>
     <p>
-        Суммарная стоимость всех покупок составит - {{ total }}
-{#        <ul>#}
-{#            <li><b>Покупка:</b> {{ comments }} <b>Цена - </b> {{ add_money }} <b>BYN</b> </li>#}
-{#        </ul>#}
+
+
     </p>
+    <div class="footer-bottom">
+        <center>Общая сумма покупок составляет - <b>{{ total }} BYN</b></center>
+    </div>
 {% endblock %}
-{% block content3 %}
-    <center>Здесь будет ссылка на форум</center>
-{% endblock %}
-{% block footer %}
-    <center>Footer</center>
-{% endblock %}
+{#{% block content3 %}#}
+{#    <center>Здесь будет ссылка на форум</center>#}
+{#{% endblock %}#}
+{#{% block footer %}#}
+{#{% endblock %}#}
 
 

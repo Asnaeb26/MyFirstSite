@@ -18,6 +18,7 @@ urlpatterns = [
     path('user_account', views.user_account),
     path('add_money', views.add_money),
     path('randomiser', views.randomiser),
+    path('get_user', views.server),
 
     # path('experiment', views.experiment)
 ]
