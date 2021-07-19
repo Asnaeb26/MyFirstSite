@@ -12,7 +12,7 @@
     font-size: 20px;
     width: 50%;
     height: 50px;
-    background-color: #9dee11;
+    background-color: #43b05c;
     border-radius: 5px;
     color: white;
 }
@@ -25,9 +25,19 @@
     background-color:#f8f9fa
 }
 
-.submit-button{
-    width: 50px;
-    height: 50px;
-    background-color: #0c5460;
+
+#add_category_button{
+    background-color: #405417;
+    border-radius: 5px;
+    color: white;
 }
 
+#category{
+    display: none;
+    margin-bottom: 1px;
+}
+
+.submit_button{
+    background-color: white;
+    border-style: none;
+}

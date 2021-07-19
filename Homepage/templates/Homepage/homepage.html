@@ -1,23 +1,40 @@
 {% extends "Homepage/index.html" %}
 {% block body %}
+{% load static %}
 <link rel="stylesheet" type="text/css" href="../../static/css/homepage.css">
+<script src="{% static "/js/Homepage.js" %}"></script>
+    <div style="text-align: center;"></div>
     <div class="mx-auto">
+        <b>{{ hello }}, {{ user }}</b>
         <div class="current_month mx-auto">
-        1 Июля - 31 июля
+            1 Июля - 31 июля
+            <img src="{% static 'Homepage/gear.svg' %}" width="30px">
         </div>
         <form action="add_money" method="POST">
             <input type="number" step="0.01" min="1" id="add_money" name="add_money" placeholder="Введите сумму" required><br>
             <input type="text" id="comments" name="comments" placeholder="Комментарий"><br>
-            <select name="category">
+            <select name="category" required>
                 {% for category in categories %}
-                <option>{{ category }}</option>
+                    {% if category != ''%}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endif %}
                 {% endfor %}
                 <option disabled selected>Выберите категорию</option>
-            </select>
-            <button type="button" class="submit-button">+</button><br>
-            <button type="submit" id="add_category_button">Submit</button>
+            </select><br>
+{#            <button type="button" class="submit-button" id="plus_button">add category</button><br>#}
+{#            <div id="category">#}
+{#                <input type="text" name="category" placeholder="Добавьте категорию"><br>#}
+{#            </div>#}
+            <button type="submit" class="submit_button">
+                <img src="{% static "Homepage/plus.svg" %}" style="width: 50px">
+            </button>
         </form>
         <img src="{{ image.avatar.url }}">
+        <img src="{% static "Homepage/pie.svg" %}" width="640">
+
+
+
+
 {#        <form action="randomiser" method="POST">#}
 {#            <button type="submit" id="add_money_button">done</button>#}
 {#        </form>#}

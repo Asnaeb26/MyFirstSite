@@ -1,6 +1,5 @@
 from django.contrib import admin
-from Homepage.models import User, Person3
-admin.site.register(User)
+from Homepage.models import Person3
 admin.site.register(Person3)
 
 

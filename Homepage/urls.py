@@ -19,6 +19,9 @@ urlpatterns = [
     path('add_money', views.add_money),
     path('randomiser', views.randomiser),
     path('get_user', views.server),
+    path('del_spending', views.del_spending),
+    path('sort_of', views.sort_of),
+    path('pie', views.pie),
 
     # path('experiment', views.experiment)
 ]

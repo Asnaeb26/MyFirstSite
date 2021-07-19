@@ -8,6 +8,8 @@ import pickle
 from pymemcache import Client
 from datetime import datetime
 from django.utils.translation import ugettext as _, activate
+import matplotlib.pyplot as plt
+import numpy as np
 import time
 import datetime as dt
 import requests
@@ -30,8 +32,51 @@ def homepage(request):
     for i in SpentMoney.objects.all():
         ls.append(i.category)
     categories = set(ls)
-    context = {'categories': categories}
+    hello = greeting()
+    context = {'categories': categories, 'hello': hello}
     return render(request, 'Homepage/homepage.html', context)
+
+
+def greeting():
+    now = str(datetime.now())
+    time_now = now.split(' ')[1]
+    current_hour = int(time_now.split(':')[0])
+    if 6 <= current_hour <= 11:
+        hello = 'Доброе утро'
+    elif 12 < current_hour < 18:
+        hello = 'Добрый день'
+    elif 18 <= current_hour < 23:
+        hello = 'Добрый вечер'
+    else:
+        hello = 'Доброй ночи'
+    return hello
+
+
+def pie(request):
+    all_objects = SpentMoney.objects.all()
+    categories = []
+    for label in all_objects:
+        categories.append(label.category)
+    categories = set(categories)
+    labels = []
+    values = []
+    for j in categories:
+        total = 0
+        for i in all_objects:
+            if i.category == j:
+                total += i.add_money
+        labels.append(j)
+        values.append(total)
+    # labels = ['Nokia', 'Samsung', 'Apple', 'Lumia']
+    # values = [20, 50, 25, 5]
+
+    # colors = ['yellow', 'green', 'red', 'blue']
+    fig1, ax1 = plt.subplots()
+    plt.pie(values, labels=labels, autopct='%1.2f%%')
+    plt.axis('equal')
+    plt.legend(loc='best')
+    plt.savefig('Homepage/static/Homepage/pie.svg')
+    return
 
 
 def add_money(request):
@@ -40,15 +85,37 @@ def add_money(request):
         comments=request.POST['comments'],
         category=request.POST['category']
     ).save()
+    pie(request)  # Тут я вызываю pie, чтобы сохранить ихображение
     return HttpResponseRedirect('/')
 
 
 def history(request):
     total = 0
+    ls = []
     for i in SpentMoney.objects.all():
+        ls.append(i.category)
         total += i.add_money
-    context = {'products': SpentMoney.objects.all(), 'total': total}
+    categories = set(ls)
+    context = {'products': SpentMoney.objects.all(), 'total': total, 'categories':categories}
     return render(request, 'Homepage/history.html', context)
+
+
+def sort_of(request):
+    ls = []
+    for i in SpentMoney.objects.all():
+        ls.append(i.category)
+    categories = set(ls)
+    selected_category = SpentMoney.objects.filter(category=request.GET['category'])
+    context = {'sort_categories': selected_category, 'categories': categories}
+
+    return render(request, 'Homepage/history.html', context)
+    # return HttpResponse(context)
+
+
+def del_spending(request):
+    SpentMoney.objects.filter(id=request.GET['id']).delete()
+    pie(request)
+    return HttpResponseRedirect('history')
 
 
 def exchange_rates(request):
@@ -72,14 +139,14 @@ def do_registration(request):
 
 
 def register(request):
-    new_user = User.objects.create_user(
+    user = User.objects.create_user(
         request.POST['username'],
         password=request.POST['password'],
         first_name=' ',
         last_name=' ',
         email='',
     )
-    login(request, new_user)
+    login(request, user)
     return HttpResponseRedirect('/')
 
 
