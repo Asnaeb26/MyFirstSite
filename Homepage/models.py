@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 import sqlite3
 
 
@@ -21,9 +22,7 @@ class SpentMoney(models.Model):
     category = models.CharField(max_length=100)
 
 
-
-class Randomiser(models.Model):
-    name = models.CharField(max_length=100)
-    number = models.IntegerField(default=0)
-
+class Client(models.Model):
+    avatar = models.ImageField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 

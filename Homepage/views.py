@@ -11,7 +11,6 @@ from django.utils.translation import ugettext as _, activate
 import matplotlib.pyplot as plt
 import numpy as np
 import time
-import datetime as dt
 import requests
 
 
@@ -43,7 +42,7 @@ def greeting():
     current_hour = int(time_now.split(':')[0])
     if 6 <= current_hour <= 11:
         hello = 'Доброе утро'
-    elif 12 < current_hour < 18:
+    elif 12 <= current_hour < 18:
         hello = 'Добрый день'
     elif 18 <= current_hour < 23:
         hello = 'Добрый вечер'
@@ -130,6 +129,9 @@ def error(request):
     return render(request, 'Homepage/error_login.html')
 
 
+# ------block with user------------
+
+
 def login2(request):
     return render(request, 'Homepage/Log_in.html')
 
@@ -142,10 +144,12 @@ def register(request):
     user = User.objects.create_user(
         request.POST['username'],
         password=request.POST['password'],
-        first_name=' ',
-        last_name=' ',
-        email='',
+        email=request.POST['email'],
+        first_name='',
+        last_name='',
     )
+    # client = Client(user=user, avatar='')
+    # client.save()
     login(request, user)
     return HttpResponseRedirect('/')
 
@@ -173,14 +177,6 @@ def do_logout(request):
         return HttpResponse('Такой пользователь не залогинен')
 
 
-def ajax_path(request):
-    response = {
-        'message': 'Здарова отец'
-    }
-
-    return JsonResponse(response)
-
-
 def uniq_user(request):
     # try:
     if len(User.objects.filter(username=request.POST['a'])) == 0:
@@ -196,7 +192,46 @@ def uniq_user(request):
 
 
 def user_account(request):
-    return render(request, 'Homepage/user_account.html')
+    x = Client.objects.all()[0]
+    user_id = 6
+    context = {'User_info': request.user, 'photo': x}
+    return render(request, 'Homepage/user_account.html', context=context)
+    # return HttpResponse(u.last_name)
+
+# ___________end block with user_____________
+
+
+def ajax_path(request):
+    response = {
+        'message': 'Здарова отец ' + request.POST['a']
+    }
+
+    return JsonResponse(response)
+
+
+def test_fn(request):
+    mod = SpentMoney.objects.all()
+    numb = int(request.POST['a']) - 9
+    answer = {
+        'b': numb,
+        'c': request.POST['a']
+    }
+    return JsonResponse(answer)
+
+
+def pie_fn(request):
+    categories = []
+    total = 0
+    category_data = {}
+    for i in SpentMoney.objects.all():
+        categories.append(i.category)
+    categories = list(set(categories))
+    for category in categories:
+        for j in SpentMoney.objects.filter(category=category):
+             total += j.add_money
+        category_data[category] = str(total)
+    return JsonResponse(category_data, safe=False)
+    # return HttpResponse(categories)
 
 
 def two_list(ls1, ls2):
@@ -205,17 +240,6 @@ def two_list(ls1, ls2):
         if i in ls2:
             ls3.append(i)
     return ls3
-
-
-def randomiser(request):
-    names = ['ac', 'fa', 'ek', 'do', 'ga', 'tu']
-    for i in range(4000):
-        a = random.randint(1, 1000)
-        b = random.randint(1, 1000)
-        c = a + b
-        name = random.choice(names) + random.choice(names)
-        Randomiser(name=name, number=c).save()
-    return HttpResponseRedirect('/')
 
 
 def server(request):

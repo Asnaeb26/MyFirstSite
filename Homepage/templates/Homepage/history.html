@@ -3,7 +3,8 @@
     <div class="sort">
         <a href="history">Все категории | </a>
         {% for category in categories %}
-           <a href="sort_of?category={{ category }}">{{ category }} | </a>
+            <a href="sort_of?category={{ category }}">{{ category }} | </a>
+
         {% endfor %}
     </div>
     <table>
@@ -25,12 +26,11 @@
                 <td>
                     <a href="del_spending?id={{ product.id }}">Удалить</a>
                 </td>
-{#                <td><button>Изменить</button></td>#}
+
             </tr>
             {% endfor %}
 
-
-    {% for product in sort_categories %}
+            {% for product in sort_categories %}
             <tr>
                 <td>
                     {{ product.comments|default:'<Комментарий не введен>'}}
@@ -41,7 +41,6 @@
                 <td>
                     <a href="del_spending?id={{ product.id }}">Удалить</a>
                 </td>
-{#                <td><button>Изменить</button></td>#}
             </tr>
             {% endfor %}
     </table>

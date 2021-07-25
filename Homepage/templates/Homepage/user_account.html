@@ -1,6 +1,17 @@
 {% extends "Homepage/index.html" %}
 
 {% block body %}
-    Имя пользователя - {{ user }}<br>
-
+{#    <img src="{{ cat.photo.url }}" style="width: 100px; border-radius: 50%"><br>#}
+    Логин пользователя - <b>{{ User_info.username }}</b><br>
+    {% if User_info.first_name != '' and User_info.last_name != ''%}
+    Имя пользователя - <b>{{ User_info.first_name }}</b><br>
+    Фамилия пользователя - <b>{{ User_info.last_name }}</b><br>
+    {% else %}
+    Имя пользователя - <b>< Нет информации ></b><br>
+    Фамилия пользователя - <b>< Нет информации ></b><br>
+    {% endif %}
+    Электронная почта - <b>{{ User_info.email }}</b><br>
+    Дата регистрации - <b>{{ User_info.date_joined }}</b><br>
+    id - <b>{{ id }}</b><br>
+{#    Загрузить аватар - <br>#}
 {% endblock %}
