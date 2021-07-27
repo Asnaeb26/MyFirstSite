@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from Homepage.models import *
 import random
 import pickle
-from pymemcache import Client
+from pymemcache import Client as CacheClient
 from datetime import datetime
 from django.utils.translation import ugettext as _, activate
 import matplotlib.pyplot as plt
@@ -14,16 +14,10 @@ import time
 import requests
 
 
-def main(request):
-    activate(random.choice(['en', 'by']))
-    return render(
-        'Homepage/homepage.html', {'Hello': _('Привет мир')}
-    )
-
-
 def index(request):
-    context = {'image': User.objects.filter(id=1)[0]}
-    return render(request, "Homepage/homepage.html", context)
+    client = Client.objects.all()[0]
+    context = {'photo': client}
+    return render(request, 'Homepage/index.html', context=context)
 
 
 def homepage(request):
@@ -82,29 +76,32 @@ def add_money(request):
     SpentMoney(
         add_money=request.POST['add_money'],
         comments=request.POST['comments'],
-        category=request.POST['category']
+        category=request.POST['category'],
+        user_id=request.user.id
     ).save()
     pie(request)  # Тут я вызываю pie, чтобы сохранить ихображение
     return HttpResponseRedirect('/')
 
 
 def history(request):
+    current_user = SpentMoney.objects.filter(user_id=request.user.id)
     total = 0
     ls = []
-    for i in SpentMoney.objects.all():
+    for i in current_user:
         ls.append(i.category)
         total += i.add_money
     categories = set(ls)
-    context = {'products': SpentMoney.objects.all(), 'total': total, 'categories':categories}
+    context = {'products': current_user, 'total': total, 'categories':categories}
     return render(request, 'Homepage/history.html', context)
 
 
 def sort_of(request):
+    current_user = SpentMoney.objects.filter(user_id=request.user.id)
     ls = []
-    for i in SpentMoney.objects.all():
+    for i in current_user:
         ls.append(i.category)
     categories = set(ls)
-    selected_category = SpentMoney.objects.filter(category=request.GET['category'])
+    selected_category = current_user.filter(category=request.GET['category'])
     context = {'sort_categories': selected_category, 'categories': categories}
 
     return render(request, 'Homepage/history.html', context)
@@ -192,11 +189,10 @@ def uniq_user(request):
 
 
 def user_account(request):
-    x = Client.objects.all()[0]
-    user_id = 6
-    context = {'User_info': request.user, 'photo': x}
+    user_id = User.objects.filter(username=request.user)[0].id
+    client = Client.objects.filter(user_id=user_id)[0]
+    context = {'User_info': request.user, 'photo': client, 'id': user_id}
     return render(request, 'Homepage/user_account.html', context=context)
-    # return HttpResponse(u.last_name)
 
 # ___________end block with user_____________
 
@@ -297,26 +293,5 @@ def server(request):
 #
 #     return HttpResponse('Ok')
 
-
-def randomiser(request):
-    client = Client(('localhost', 11211))
-    people = client.get('people')
-    if people is None:
-        people = []
-        for person in Randomiser.objects.all():
-            people.append(person.name)
-        client.set(
-            'people',
-            pickle.dumps(people),
-            expire=60
-        )
-    else:
-        people = pickle.loads(people)
-
-    return render(request, 'Homepage/homepage.html',
-        {
-            'people': people
-        }
-    )
 
 

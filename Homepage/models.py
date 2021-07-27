@@ -20,6 +20,7 @@ class SpentMoney(models.Model):
     comments = models.TextField(max_length=100)
     time_input = models.DateTimeField(auto_now_add=True)
     category = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Client(models.Model):

@@ -1,7 +1,7 @@
 {% extends "Homepage/index.html" %}
 
 {% block body %}
-{#    <img src="{{ cat.photo.url }}" style="width: 100px; border-radius: 50%"><br>#}
+    <img src="{{ photo.avatar.url }}" style="width: 60px;"><br>
     Логин пользователя - <b>{{ User_info.username }}</b><br>
     {% if User_info.first_name != '' and User_info.last_name != ''%}
     Имя пользователя - <b>{{ User_info.first_name }}</b><br>

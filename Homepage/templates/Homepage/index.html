@@ -25,7 +25,9 @@
           <a class="me-3 py-2 text-dark text-decoration-none" href="/history">История затрат</a>
           <a class="me-3 py-2 text-dark text-decoration-none" href="/exchange_rates">Курсы валют</a>
           {% if request.user.is_authenticated %}
-              <button type="button" class="btn btn-outline-primary"><a href="/user_account">{{ user }}</a></button>
+              <button type="button" class="btn btn-outline-primary"><a href="/user_account">
+                  <img src="{{ photo.avatar.url }}" style="width: 30px;border: 1px solid #0d6efd; border-radius: 50%">{{ user }}</a>
+              </button>
               <button type="button" class="btn btn-outline-primary"><a href="/logout">Выйти</a></button>
           {% else %}
               <button type="button" class="btn btn-outline-primary"><a href="/login">Войти</a></button>
