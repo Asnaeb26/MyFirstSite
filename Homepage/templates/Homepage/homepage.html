@@ -3,10 +3,50 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="../../static/css/homepage.css">
 <script src="{% static "/js/Homepage_script.js" %}"></script>
-<script src="{% static "/js/jquery.jqplot.min.js" %}"></script>
-<script src="{% static "/css/jquery.jqplot.css" %}"></script>
-<script src="{% static "/js/pie.js" %}"></script>
-<script src="{% static "/js/jqplot.pieRenderer.js" %}"></script>
+{#<script src="{% static "/js/jquery.jqplot.min.js" %}"></script>#}
+{#<script src="{% static "/css/jquery.jqplot.css" %}"></script>#}
+{#<script src="{% static "/js/jqplot.pieRenderer.js" %}"></script>#}
+{#<script src="{% static "/js/pie.js" %}"></script>#}
+<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+<script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+<script>
+
+$.post(
+    "pie_fn", {}, [
+        function fn1(response) {
+            console.log(typeof response)
+            console.log(response)
+            {#return response#}
+            for (var idx in response) {
+                console.log(response[idx])
+            }
+            {#alert(response)#}
+        }
+]);
+
+
+XXX = [
+			{ y: 48.36, label: "aaaaaaaaaaa" },
+			{ y: 26.85, label: "bbbbb" },
+			{ y: 1.49, label: "ccc" },
+			{ y: 6.98, label: "ddd" },
+		]
+window.onload = function () {
+var options = {
+	data: [{
+		type: "pie",
+		startAngle: 40,
+		toolTipContent: "<b>{label}</b>: {y}%",
+		showInLegend: "true",
+		legendText: "{label}",
+		indexLabelFontSize: 16,
+		indexLabel: "{label} - {y}%",
+		dataPoints: XXX
+	}]
+};
+$("#chartContainer").CanvasJSChart(options);
+}
+</script>
     <div style="text-align: center;"></div>
     <div class="mx-auto">
         <div style="text-align: center; margin-bottom: 20px"><b>{{ hello }}, {{ user }}</b></div>
@@ -33,10 +73,10 @@
                 <img src="{% static "Homepage/plus.svg" %}" style="width: 50px">
             </button>
         </form>
-        <img src="{{ image.avatar.url }}">
-        <div style="text-align: center">
-            <img src="{% static "Homepage/pie.svg" %}" width="640">
-        </div>
-          </div><div id="chart7" style="height:400px;"></div>
+{#        <div style="text-align: center">#}
+{#            <img src="{% static "Homepage/pie.svg" %}" width="640">#}
+{#        </div>#}
+{#        </div><div id="chart7" style="height:400px;"></div>#}
+        <div id="chartContainer" style="height: 370px; width: 100%;"></div>
     </div>
 {% endblock %}

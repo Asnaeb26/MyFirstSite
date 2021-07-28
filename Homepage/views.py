@@ -216,17 +216,22 @@ def test_fn(request):
 
 
 def pie_fn(request):
+    # user_id = User.objects.filter(username=request.user)[0].id
+    user_id = request.user.id
+    current_costs = SpentMoney.objects.filter(user_id=user_id)
     categories = []
-    total = 0
-    category_data = {}
-    for i in SpentMoney.objects.all():
+    COSTS = []
+    for i in current_costs:
         categories.append(i.category)
     categories = list(set(categories))
     for category in categories:
-        for j in SpentMoney.objects.filter(category=category):
+        total = 0
+        for j in current_costs.filter(category=category):
              total += j.add_money
-        category_data[category] = str(total)
-    return JsonResponse(category_data, safe=False)
+        category_data = {'y': float(total), 'label': category}
+        COSTS.append(category_data)
+    # print(COSTS)
+    return JsonResponse(COSTS, safe=False)
     # return HttpResponse(categories)
 
 
