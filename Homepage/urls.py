@@ -21,7 +21,6 @@ urlpatterns = [
     path('get_user', views.server),
     path('del_spending', views.del_spending),
     path('sort_of', views.sort_of),
-    path('pie', views.pie),
     path('pie_fn', views.pie_fn),
     path('test_fn', views.test_fn),
 

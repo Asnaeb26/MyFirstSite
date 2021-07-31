@@ -14,19 +14,26 @@ import time
 import requests
 
 
+def user_data(request):
+    user_id = User.objects.filter(username=request.user)[0].id
+    client = Client.objects.filter(user_id=user_id)[0]
+    return client
+
+
 def index(request):
-    client = Client.objects.all()[0]
+    client = user_data()
     context = {'photo': client}
     return render(request, 'Homepage/index.html', context=context)
 
 
 def homepage(request):
+    client = user_data(request)
     ls = []
     for i in SpentMoney.objects.all():
         ls.append(i.category)
     categories = set(ls)
     hello = greeting()
-    context = {'categories': categories, 'hello': hello}
+    context = {'categories': categories, 'hello': hello, 'photo': client}
     return render(request, 'Homepage/homepage.html', context)
 
 
@@ -45,45 +52,22 @@ def greeting():
     return hello
 
 
-def pie(request):
-    all_objects = SpentMoney.objects.all()
-    categories = []
-    for label in all_objects:
-        categories.append(label.category)
-    categories = set(categories)
-    labels = []
-    values = []
-    for j in categories:
-        total = 0
-        for i in all_objects:
-            if i.category == j:
-                total += i.add_money
-        labels.append(j)
-        values.append(total)
-    # labels = ['Nokia', 'Samsung', 'Apple', 'Lumia']
-    # values = [20, 50, 25, 5]
-
-    # colors = ['yellow', 'green', 'red', 'blue']
-    fig1, ax1 = plt.subplots()
-    plt.pie(values, labels=labels, autopct='%1.2f%%')
-    plt.axis('equal')
-    plt.legend(loc='best')
-    plt.savefig('Homepage/static/Homepage/pie.svg')
-    return
-
-
 def add_money(request):
+    if request.POST['new_category'] == '':
+        category = request.POST['category']
+    else:
+        category = request.POST['new_category']
     SpentMoney(
         add_money=request.POST['add_money'],
+        category=category,
         comments=request.POST['comments'],
-        category=request.POST['category'],
         user_id=request.user.id
     ).save()
-    pie(request)  # Тут я вызываю pie, чтобы сохранить ихображение
     return HttpResponseRedirect('/')
 
 
 def history(request):
+    client = user_data(request)
     current_user = SpentMoney.objects.filter(user_id=request.user.id)
     total = 0
     ls = []
@@ -91,7 +75,13 @@ def history(request):
         ls.append(i.category)
         total += i.add_money
     categories = set(ls)
-    context = {'products': current_user, 'total': total, 'categories':categories}
+    context = {
+        'products': current_user,
+        'total': total,
+        'categories': categories,
+        'photo': client
+
+    }
     return render(request, 'Homepage/history.html', context)
 
 
@@ -110,12 +100,15 @@ def sort_of(request):
 
 def del_spending(request):
     SpentMoney.objects.filter(id=request.GET['id']).delete()
-    pie(request)
     return HttpResponseRedirect('history')
 
 
 def exchange_rates(request):
-    return render(request, 'Homepage/exchange_rates.html')
+    client = user_data(request)
+    context = {
+        'photo': client
+    }
+    return render(request, 'Homepage/exchange_rates.html', context)
 
 
 def task2(request):
@@ -145,8 +138,8 @@ def register(request):
         first_name='',
         last_name='',
     )
-    # client = Client(user=user, avatar='')
-    # client.save()
+    client = Client(user_id=user.id, avatar='cat.png')
+    client.save()
     login(request, user)
     return HttpResponseRedirect('/')
 
@@ -157,9 +150,6 @@ def login_user(request):
         password=request.POST['password']
     )
     if user is None:
-        pass
-        # return render(request, 'Homepage/error_login.html')
-        # HttpResponse('Такого пользователя не существует')
         return render(request, 'Homepage/Log_in.html', {'error': True})
     else:
         login(request, user)
@@ -194,6 +184,7 @@ def user_account(request):
     context = {'User_info': request.user, 'photo': client, 'id': user_id}
     return render(request, 'Homepage/user_account.html', context=context)
 
+
 # ___________end block with user_____________
 
 
@@ -215,22 +206,31 @@ def test_fn(request):
     return JsonResponse(answer)
 
 
+def percent(total, num):
+    percentage = (num * 100)/total
+    return percentage
+
+
 def pie_fn(request):
-    # user_id = User.objects.filter(username=request.user)[0].id
     user_id = request.user.id
     current_costs = SpentMoney.objects.filter(user_id=user_id)
     categories = []
+    TOTAL = 0
     COSTS = []
     for i in current_costs:
         categories.append(i.category)
     categories = list(set(categories))
     for category in categories:
-        total = 0
+        total_for_category = 0
         for j in current_costs.filter(category=category):
-             total += j.add_money
-        category_data = {'y': float(total), 'label': category}
+            total_for_category += j.add_money
+        TOTAL += total_for_category
+        category_data = {'y': float(total_for_category), 'label': category}
         COSTS.append(category_data)
-    # print(COSTS)
+    for token in COSTS:
+        percentage = (token['y'] * 100) / TOTAL
+        token['y'] = round(percentage, 1)
+
     return JsonResponse(COSTS, safe=False)
     # return HttpResponse(categories)
 
@@ -259,7 +259,6 @@ def server(request):
         for i in Person3.objects.filter(id=id_new):
             ls.append({'name': i.name, 'age': i.age})
         return JsonResponse({'people': ls})
-
 
 # def dollars(request):
 #     get_response()
@@ -297,6 +296,3 @@ def server(request):
 #           str(sum) + ' секунд')
 #
 #     return HttpResponse('Ok')
-
-
-

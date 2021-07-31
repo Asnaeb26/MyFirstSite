@@ -6,47 +6,9 @@
 {#<script src="{% static "/js/jquery.jqplot.min.js" %}"></script>#}
 {#<script src="{% static "/css/jquery.jqplot.css" %}"></script>#}
 {#<script src="{% static "/js/jqplot.pieRenderer.js" %}"></script>#}
-{#<script src="{% static "/js/pie.js" %}"></script>#}
+<script src="{% static "/js/pie.js" %}"></script>
 <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
 <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
-<script>
-
-$.post(
-    "pie_fn", {}, [
-        function fn1(response) {
-            console.log(typeof response)
-            console.log(response)
-            {#return response#}
-            for (var idx in response) {
-                console.log(response[idx])
-            }
-            {#alert(response)#}
-        }
-]);
-
-
-XXX = [
-			{ y: 48.36, label: "aaaaaaaaaaa" },
-			{ y: 26.85, label: "bbbbb" },
-			{ y: 1.49, label: "ccc" },
-			{ y: 6.98, label: "ddd" },
-		]
-window.onload = function () {
-var options = {
-	data: [{
-		type: "pie",
-		startAngle: 40,
-		toolTipContent: "<b>{label}</b>: {y}%",
-		showInLegend: "true",
-		legendText: "{label}",
-		indexLabelFontSize: 16,
-		indexLabel: "{label} - {y}%",
-		dataPoints: XXX
-	}]
-};
-$("#chartContainer").CanvasJSChart(options);
-}
-</script>
     <div style="text-align: center;"></div>
     <div class="mx-auto">
         <div style="text-align: center; margin-bottom: 20px"><b>{{ hello }}, {{ user }}</b></div>
@@ -65,9 +27,9 @@ $("#chartContainer").CanvasJSChart(options);
                 {% endfor %}
                 <option disabled selected>Выберите категорию</option>
             </select><br>
-            <button type="button" class="submit-button" id="plus_button">add category</button><br>
+            <button type="button" class="submit-button" id="plus_button">Add new category</button><br>
             <div id="category">
-                <input type="text" name="category" placeholder="Добавьте категорию"><br>
+                <input type="text" name="new_category" placeholder="Добавьте категорию"><br>
             </div>
             <button type="submit" class="submit_button">
                 <img src="{% static "Homepage/plus.svg" %}" style="width: 50px">
@@ -76,7 +38,7 @@ $("#chartContainer").CanvasJSChart(options);
 {#        <div style="text-align: center">#}
 {#            <img src="{% static "Homepage/pie.svg" %}" width="640">#}
 {#        </div>#}
-{#        </div><div id="chart7" style="height:400px;"></div>#}
+{#        <div id="chart7" style="height:400px;"></div>#}
         <div id="chartContainer" style="height: 370px; width: 100%;"></div>
     </div>
 {% endblock %}
