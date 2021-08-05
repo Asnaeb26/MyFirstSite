@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $.post(
-    "pie_fn", {},
+       window.graphic_url, {},
         function (response) {
         var options = {
             data: [{

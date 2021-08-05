@@ -3,6 +3,8 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from Homepage.models import *
+import json
+import datetime as dt
 import random
 import pickle
 from pymemcache import Client as CacheClient
@@ -21,20 +23,67 @@ def user_data(request):
 
 
 def index(request):
-    client = user_data()
+    client = user_data(request)
     context = {'photo': client}
     return render(request, 'Homepage/index.html', context=context)
 
 
 def homepage(request):
     client = user_data(request)
-    ls = []
-    for i in SpentMoney.objects.all():
-        ls.append(i.category)
-    categories = set(ls)
     hello = greeting()
-    context = {'categories': categories, 'hello': hello, 'photo': client}
+    context = {'hello': hello,
+               'photo': client
+               }
+    if request.GET.get('what') == 'show_income':
+        # доходы
+        context['income'] = True
+        sources = []
+        for j in Income.objects.filter(user=request.user):
+            sources.append(j.source)
+        sources = set(sources)
+        context['sources'] = sources
+        context['graphic_url'] = 'pie_fn_income'
+    else:
+        # расходы
+        categories = []
+        for i in SpentMoney.objects.filter(user=request.user):
+            categories.append(i.category)
+        categories = set(categories)
+
+        context['categories'] = categories
+        context['graphic_url'] = 'pie_fn'
     return render(request, 'Homepage/homepage.html', context)
+
+
+def get_graphic(table, request):
+    user_id = request.user.id
+    current_costs = table.objects.filter(user_id=user_id)
+    categories = []
+    TOTAL = 0
+    COSTS = []
+    for i in current_costs:
+        categories.append(i.category)
+    categories = list(set(categories))
+    for category in categories:
+        total_for_category = 0
+        for j in current_costs.filter(category=category):
+            total_for_category += j.add_money
+        TOTAL += total_for_category
+        category_data = {'y': float(total_for_category), 'label': category}
+        COSTS.append(category_data)
+    for token in COSTS:
+        percentage = (token['y'] * 100) / TOTAL
+        token['y'] = round(percentage, 1)
+
+    return JsonResponse(COSTS, safe=False)
+
+
+def pie_fn(request):
+    return get_graphic(SpentMoney, request)
+
+
+def pie_fn_income(request):
+    return get_graphic(Income, request)
 
 
 def greeting():
@@ -61,6 +110,20 @@ def add_money(request):
         add_money=request.POST['add_money'],
         category=category,
         comments=request.POST['comments'],
+        user_id=request.user.id
+    ).save()
+    return HttpResponseRedirect('/')
+
+
+def add_income(request):
+    if request.POST['new_source'] == '':
+        source = request.POST['source']
+    else:
+        source = request.POST['new_source']
+    Income(
+        add_income=request.POST['add_income'],
+        source=source,
+        comment=request.POST['comment'],
         user_id=request.user.id
     ).save()
     return HttpResponseRedirect('/')
@@ -103,12 +166,18 @@ def del_spending(request):
     return HttpResponseRedirect('history')
 
 
-def exchange_rates(request):
+def planning(request):
+    response = requests.get('https://www.nbrb.by/api/exrates/rates/431')
+    data = json.loads(response.text)
     client = user_data(request)
+    dollar = data['Cur_OfficialRate']
+    abbr = data['Cur_Abbreviation']
     context = {
+        'dollar': dollar,
+        'abbr': abbr,
         'photo': client
     }
-    return render(request, 'Homepage/exchange_rates.html', context)
+    return render(request, 'Homepage/planning.html', context)
 
 
 def task2(request):
@@ -206,35 +275,6 @@ def test_fn(request):
     return JsonResponse(answer)
 
 
-def percent(total, num):
-    percentage = (num * 100)/total
-    return percentage
-
-
-def pie_fn(request):
-    user_id = request.user.id
-    current_costs = SpentMoney.objects.filter(user_id=user_id)
-    categories = []
-    TOTAL = 0
-    COSTS = []
-    for i in current_costs:
-        categories.append(i.category)
-    categories = list(set(categories))
-    for category in categories:
-        total_for_category = 0
-        for j in current_costs.filter(category=category):
-            total_for_category += j.add_money
-        TOTAL += total_for_category
-        category_data = {'y': float(total_for_category), 'label': category}
-        COSTS.append(category_data)
-    for token in COSTS:
-        percentage = (token['y'] * 100) / TOTAL
-        token['y'] = round(percentage, 1)
-
-    return JsonResponse(COSTS, safe=False)
-    # return HttpResponse(categories)
-
-
 def two_list(ls1, ls2):
     ls3 = []
     for i in ls1:
@@ -259,10 +299,6 @@ def server(request):
         for i in Person3.objects.filter(id=id_new):
             ls.append({'name': i.name, 'age': i.age})
         return JsonResponse({'people': ls})
-
-# def dollars(request):
-#     get_response()
-#     return render(request, 'Homepage/exchange_rates.html')
 
 
 # def experiment(request):

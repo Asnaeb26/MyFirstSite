@@ -23,6 +23,13 @@ class SpentMoney(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
+class Income(models.Model):
+    add_income = models.FloatField(default=0)
+    source = models.CharField(max_length=40)
+    comment = models.TextField(max_length=40)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
 class Client(models.Model):
     avatar = models.ImageField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)

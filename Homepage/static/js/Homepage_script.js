@@ -4,10 +4,6 @@ $(document).ready(function() {
         $(this).toggleClass("active");
     })
 
-    $('#id45').click(function (e){
-        alert('Homepage tttttttttt')
-    })
-
     $.post(
     "pie_fn", {}, [
         function fn1(response) {

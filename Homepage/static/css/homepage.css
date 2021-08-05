@@ -27,7 +27,7 @@
 
 
 #add_category_button{
-    background-color: #405417;
+    background-color: #43b05c;
     border-radius: 5px;
     color: white;
 }
@@ -40,4 +40,12 @@
 .submit_button{
     background-color: white;
     border-style: none;
+}
+
+#plus_button{
+    background-color: #43b05c;
+    border-radius: 5px;
+    color: white;
+    border: 0 none black;
+    margin: 10px 0;
 }

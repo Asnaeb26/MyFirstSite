@@ -7,7 +7,7 @@ urlpatterns = [
     # path('', views.randomiser),
     path('history', views.history),
     path('index', views.index),
-    path('exchange_rates', views.exchange_rates),
+    path('planning', views.planning),
     path('task2', views.task2),
     path('login_user', views.login_user),
     path('login', views.login2),
@@ -18,10 +18,12 @@ urlpatterns = [
     path('uniq_user', views.uniq_user),
     path('user_account', views.user_account),
     path('add_money', views.add_money),
+    path('add_income', views.add_income),
     path('get_user', views.server),
     path('del_spending', views.del_spending),
     path('sort_of', views.sort_of),
     path('pie_fn', views.pie_fn),
+    path('pie_fn_income', views.pie_fn_income),
     path('test_fn', views.test_fn),
 
     # path('experiment', views.experiment)
