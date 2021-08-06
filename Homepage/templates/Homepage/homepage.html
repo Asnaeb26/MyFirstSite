@@ -46,7 +46,6 @@ window.graphic_url = "{{ graphic_url }}";
         {% else %}
             <form action="add_money" method="POST" style="text-align: center; margin-top: 20px">
                 <label><b><a href="?what=show_income">РАСХОДЫ</a></b></label><br><br>
-{#                <label><b><a href="/?income_context=1">РАСХОДЫ</a></b></label><br><br>#}
                 <input type="number" step="0.01" min="1" id="add_money" name="add_money" placeholder="Введите сумму" required><br>
                 <input type="text" id="comments" name="comments" placeholder="Комментарий"><br>
                 <select name="category" required>

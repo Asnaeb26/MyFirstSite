@@ -36,11 +36,11 @@ def homepage(request):
                }
     if request.GET.get('what') == 'show_income':
         # доходы
-        context['income'] = True
         sources = []
         for j in Income.objects.filter(user=request.user):
             sources.append(j.source)
         sources = set(sources)
+        context['income'] = True
         context['sources'] = sources
         context['graphic_url'] = 'pie_fn_income'
     else:
@@ -49,15 +49,14 @@ def homepage(request):
         for i in SpentMoney.objects.filter(user=request.user):
             categories.append(i.category)
         categories = set(categories)
-
         context['categories'] = categories
         context['graphic_url'] = 'pie_fn'
     return render(request, 'Homepage/homepage.html', context)
 
 
-def get_graphic(table, request):
+def pie_fn(request):
     user_id = request.user.id
-    current_costs = table.objects.filter(user_id=user_id)
+    current_costs = SpentMoney.objects.filter(user_id=user_id)
     categories = []
     TOTAL = 0
     COSTS = []
@@ -78,12 +77,27 @@ def get_graphic(table, request):
     return JsonResponse(COSTS, safe=False)
 
 
-def pie_fn(request):
-    return get_graphic(SpentMoney, request)
-
-
 def pie_fn_income(request):
-    return get_graphic(Income, request)
+    user_id = request.user.id
+    current_costs = Income.objects.filter(user_id=user_id)
+    sources = []
+    TOTAL = 0
+    COSTS = []
+    for i in current_costs:
+        sources.append(i.source)
+    sources = list(set(sources))
+    for source in sources:
+        total_for_source = 0
+        for j in current_costs.filter(source=source):
+            total_for_source += j.add_income
+        TOTAL += total_for_source
+        source_data = {'y': float(total_for_source), 'label': source}
+        COSTS.append(source_data)
+    for token in COSTS:
+        percentage = (token['y'] * 100) / TOTAL
+        token['y'] = round(percentage, 1)
+
+    return JsonResponse(COSTS, safe=False)
 
 
 def greeting():
@@ -131,39 +145,85 @@ def add_income(request):
 
 def history(request):
     client = user_data(request)
-    current_user = SpentMoney.objects.filter(user_id=request.user.id)
-    total = 0
-    ls = []
-    for i in current_user:
-        ls.append(i.category)
-        total += i.add_money
-    categories = set(ls)
     context = {
-        'products': current_user,
-        'total': total,
-        'categories': categories,
         'photo': client
-
     }
+    if request.GET.get('what') == 'show_income':
+        current_user = Income.objects.filter(user_id=request.user.id)
+        total_for_category = 0
+        ls = []
+        for i in current_user:
+            ls.append(i.source)
+            total_for_category += i.add_income
+        sources = set(ls)
+        context['sources'] = sources
+        context['total_for_category'] = total_for_category
+        context['products'] = current_user
+        context['income'] = True
+    else:
+        current_user = SpentMoney.objects.filter(user_id=request.user.id)
+        total_for_category = 0
+        ls = []
+        for i in current_user:
+            ls.append(i.category)
+            total_for_category += i.add_money
+        categories = set(ls)
+        context['categories'] = categories
+        context['total_for_category'] = total_for_category
+        context['products'] = current_user
     return render(request, 'Homepage/history.html', context)
 
 
 def sort_of(request):
+    client = user_data(request)
     current_user = SpentMoney.objects.filter(user_id=request.user.id)
     ls = []
     for i in current_user:
         ls.append(i.category)
     categories = set(ls)
     selected_category = current_user.filter(category=request.GET['category'])
-    context = {'sort_categories': selected_category, 'categories': categories}
+    total_for_category = 0
+    for cost in selected_category:
+        total_for_category += cost.add_money
+    context = {
+        'sort_categories': selected_category,
+        'categories': categories,
+        'photo': client,
+        'total_for_category': total_for_category
+    }
 
     return render(request, 'Homepage/history.html', context)
-    # return HttpResponse(context)
+
+
+def sort_of_income(request):
+    client = user_data(request)
+    current_user = Income.objects.filter(user_id=request.user.id)
+    ls = []
+    for i in current_user:
+        ls.append(i.source)
+    sources = set(ls)
+    selected_source = current_user.filter(source=request.GET['source'])
+    total_for_category = 0
+    for cost in selected_source:
+        total_for_category += cost.add_income
+    context = {
+        'sort_sources': selected_source,
+        'sources': sources,
+        'photo': client,
+        'income': True,
+        'total_for_category': total_for_category
+    }
+    return render(request, 'Homepage/history.html', context)
 
 
 def del_spending(request):
     SpentMoney.objects.filter(id=request.GET['id']).delete()
     return HttpResponseRedirect('history')
+
+
+def del_income(request):
+    Income.objects.filter(id=request.GET['id']).delete()
+    return HttpResponseRedirect('history?what=show_income')
 
 
 def planning(request):
