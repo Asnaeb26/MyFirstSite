@@ -34,6 +34,9 @@
           <input type="password" class="form-control" name="confirm_password" id="floatingPassword" placeholder="Password">
           <label for="password">Подтвердите пароль</label>
         </div>
+          {% if error %}
+              <p style="color: red">Ваши пароли не совпадают</p>
+          {% endif %}
         <button class="w-100 btn btn-lg btn-primary" type="submit">Зарегистрироваться</button>
         Если у вас есть аккаунт, то
         <button formaction="/login" class="w-100 btn btn-lg btn-primary">Войти в аккаунт</button>

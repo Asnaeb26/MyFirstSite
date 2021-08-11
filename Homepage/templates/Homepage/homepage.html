@@ -10,20 +10,30 @@ window.graphic_url = "{{ graphic_url }}";
 {#<script src="{% static "/css/jquery.jqplot.css" %}"></script>#}
 {#<script src="{% static "/js/jqplot.pieRenderer.js" %}"></script>#}
 <script src="{% static "/js/pie.js" %}"></script>
-
 <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
 <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
     <div style="text-align: center;"></div>
     <div class="mx-auto">
-        <div style="text-align: center; margin-bottom: 20px;"><b>{{ hello }}, {{ user }}</b></div>
+        <div style="text-align: center; margin-bottom: 20px;"><b>{{ hello }}, {{ name }}!</b></div>
         <div class="current_month mx-auto">
-            1 Июля - 31 июля
-            <img src="{% static 'Homepage/gear.svg' %}" width="30px">
+            <a href="sliding_month?direction=back" id="back" style="margin-right: 15%">
+                <img src="{% static 'Homepage/back.png' %}">
+            </a>
+            {{ first_day }} - {{ last_day }}
+            <a href="user_account">
+                <img src="{% static 'Homepage/gear.svg' %}"style="width: 30px; fill: white">
+            </a>
+            <a href="sliding_month?direction=next" style="margin-left: 15%">
+                <img src="{% static 'Homepage/next.png' %}">
+            </a>
+
         </div>
         <div class="forms" >
         {% if income %}
             <form action="add_income" method="POST" style="text-align: center; margin-top: 20px">
-                <label><b><a href="/">ДОХОДЫ</a></b></label><br><br>
+                <label><b>ДОХОДЫ <a href="homepage">
+                    <img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a></b>
+                </label><br><br>
                 <input type="number" step="0.01" min="1" id="add_income" name="add_income" placeholder="Введите сумму" required><br>
                 <input type="text" id="comment" name="comment" placeholder="Комментарий"><br>
                 <select name="source" required>
@@ -42,10 +52,12 @@ window.graphic_url = "{{ graphic_url }}";
                     <img src="{% static "Homepage/plus.svg" %}" style="width: 50px">
                 </button>
             </form>
-            <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+            <div id="chartContainer" style="height: 300px; width: 100%;"></div>
         {% else %}
             <form action="add_money" method="POST" style="text-align: center; margin-top: 20px">
-                <label><b><a href="?what=show_income">РАСХОДЫ</a></b></label><br><br>
+                <label><b>РАСХОДЫ <a href="?what=show_income">
+                    <img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a></b>
+                </label><br><br>
                 <input type="number" step="0.01" min="1" id="add_money" name="add_money" placeholder="Введите сумму" required><br>
                 <input type="text" id="comments" name="comments" placeholder="Комментарий"><br>
                 <select name="category" required>
@@ -64,8 +76,14 @@ window.graphic_url = "{{ graphic_url }}";
                     <img src="{% static "Homepage/plus.svg" %}" style="width: 50px">
                 </button>
             </form>
-            <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+            <div id="chartContainer" style="height: 300px; width: 100%;"></div>
         {% endif %}
         </div>
+        <div style="text-align: center; font-size: 20px; margin: 10px;">
+            Суммарные
+            {% if income %} доходы {% else %} расходы {% endif %} за текущий месяц {{ total }} <b>BYN</b> | {{ total_usd }} <b>USD</b>
+
+        </div>
     </div>
+
 {% endblock %}

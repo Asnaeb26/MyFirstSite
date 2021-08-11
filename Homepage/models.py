@@ -33,5 +33,6 @@ class Income(models.Model):
 
 class Client(models.Model):
     avatar = models.ImageField()
+    set_day = models.IntegerField(default=1)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

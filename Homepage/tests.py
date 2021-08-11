@@ -1,3 +1,4 @@
+import datetime
 # # from views import two_list
 # from django.test import TestCase
 # import unittest
@@ -47,5 +48,12 @@ def f3():
     return text
 
 
-print(f2())
-print(f3())
+# print(f2())
+# print(f3())
+d = 4
+d1 = datetime.date(2008, 7, (d - 3))
+# print(d1)
+d2 = d1 + datetime.timedelta(days=25)
+# print(d2)
+# print(d1.strftime('%d - %B'))
+
