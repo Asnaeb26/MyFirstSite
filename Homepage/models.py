@@ -3,18 +3,6 @@ from django.contrib.auth.models import User
 import sqlite3
 
 
-class Person3(models.Model):
-    name = models.CharField(
-        max_length=100
-    )
-    age = models.IntegerField(
-        default=18
-    )
-    credit_card_number = models.CharField(
-        max_length=90
-    )
-
-
 class SpentMoney(models.Model):
     add_money = models.FloatField(default=0)
     comments = models.TextField(max_length=100)

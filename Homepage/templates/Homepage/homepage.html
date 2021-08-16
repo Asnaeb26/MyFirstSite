@@ -16,14 +16,14 @@ window.graphic_url = "{{ graphic_url }}";
     <div class="mx-auto">
         <div style="text-align: center; margin-bottom: 20px;"><b>{{ hello }}, {{ name }}!</b></div>
         <div class="current_month mx-auto">
-            <a href="sliding_month?direction=back" id="back" style="margin-right: 15%">
+            <a href="homepage?direction=back" id="back" style="margin-right: 15%">
                 <img src="{% static 'Homepage/back.png' %}">
             </a>
             {{ first_day }} - {{ last_day }}
             <a href="user_account">
                 <img src="{% static 'Homepage/gear.svg' %}"style="width: 30px; fill: white">
             </a>
-            <a href="sliding_month?direction=next" style="margin-left: 15%">
+            <a href="homepage?direction=next" style="margin-left: 15%">
                 <img src="{% static 'Homepage/next.png' %}">
             </a>
 
