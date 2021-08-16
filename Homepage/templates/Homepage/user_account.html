@@ -5,7 +5,7 @@
     Логин пользователя - <b>{{ User_info.username }}</b><br>
     Имя пользователя - <b>{{ User_info.first_name |default:'< Нет информации >'}}</b>
     {% if first_name_edit != True  %}
-    <a href="user_account?first_name=edik"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
+    <a href="user_account?first_name=edit"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
     <br>
     {% else %}
         <a href="user_account"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
@@ -27,10 +27,15 @@
     {% endif %}
     Электронная почта - <b>{{ User_info.email }}</b><br>
     Дата регистрации - <b>{{ User_info.date_joined }}</b><br>
-    <form action="set_day" method="post">
-    <label>Установить начало месяца -</label>
-    <input type="number" name="set_day" id="set_day" min="1" max="31">
-    <button type="submit">ОК</button>
-    </form>
-{#    Загрузить аватар - <br>#}
+    Начало месяца - <b>{{ set_day }}</b>
+    {% if set_day_edit != True %}
+    <a href="user_account?set_day=edit"><img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"></a>
+    {% elif set_day_edit %}
+    <a href="user_account"><img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"></a>
+        <form action="set_day" method="post">
+            <label>Установить начало месяца -</label>
+            <input type="number" name="set_day" id="set_day" min="1" max="31">
+            <button type="submit">ОК</button>
+        </form>
+    {% endif %}
 {% endblock %}
