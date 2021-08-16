@@ -38,31 +38,19 @@ def date(request):
     client = Client.objects.filter(user_id=request.user.id)[0]
     current_year = datetime.date.today().year
     current_month = datetime.date.today().month
-    # current_month = sliding_month(request)
-    if client.set_day > DAYS_IN_MONTH[current_month]:
-        client_set_day = DAYS_IN_MONTH[current_month]
-    else:
-        client_set_day = client.set_day
-    first_day = datetime.date(current_year, current_month, client_set_day)
-    last_day = first_day + datetime.timedelta(days=DAYS_IN_MONTH[(current_month + 1)])
-    return first_day, last_day, current_month
-
-
-def sort_date(request):
-    first_day, last_day, current_month = date(request)
-    # return HttpResponse(f'Тут будет показываться месяц под номером {last_day}')
-
-
-def sliding_month(request):
     direction = request.GET.get('direction')
     if direction == 'next':
-        current_month = datetime.date.today().month + 1
+        current_month = current_month + 1
     elif direction == 'back':
-        current_month = datetime.date.today().month - 1
+        current_month = current_month - 1
+
+    if client.set_day > DAYS_IN_MONTH[current_month]:
+        selected_day = DAYS_IN_MONTH[current_month]
     else:
-        current_month = datetime.date.today().month
-    # return current_month
-    return HttpResponse(f'Тут будет показываться месяц под номером {current_month}')
+        selected_day = client.set_day
+    first_day = datetime.date(current_year, current_month, selected_day)
+    last_day = first_day + datetime.timedelta(days=DAYS_IN_MONTH[(current_month + 1)])
+    return first_day, last_day, current_month
 
 
 def homepage(request):
@@ -206,9 +194,6 @@ def edit_spending(request):
     current_id = request.POST['id']
     new_spending = float(request.POST['new_spending'])
     SpentMoney.objects.filter(id=current_id).update(add_money=new_spending)
-    # current_id = int(request.POST['id'])
-    # a = SpentMoney.objects.filter(id=current_id)
-    # return HttpResponse(id)
     return HttpResponseRedirect('history')
 
 
@@ -326,12 +311,6 @@ def planning(request):
 
 def task2(request):
     return render(request, 'Homepage/user_account.html')
-
-
-def error(request):
-    return render(request, 'Homepage/error_login.html')
-
-
 # ------block with user------------
 
 
@@ -382,7 +361,6 @@ def do_logout(request):
 
 
 def uniq_user(request):
-    # try:
     if len(User.objects.filter(username=request.POST['a'])) == 0:
         exist = 'n'
     else:
@@ -390,22 +368,25 @@ def uniq_user(request):
     response = {
         'message': exist
     }
-
-    # except IntegrityError
     return JsonResponse(response)
 
 
 def user_account(request):
     user_id = User.objects.filter(username=request.user)[0].id
     client = Client.objects.filter(user_id=user_id)[0]
+    current_set_day = Client.objects.filter(user_id=request.user.id)[0].set_day
     context = {
         'User_info': request.user,
         'photo': client,
-        'id': user_id}
+        'id': user_id,
+        'set_day': current_set_day,
+    }
     if request.GET.get('last_name') == 'edit':
         context['last_name_edit'] = True
-    elif request.GET.get('first_name') == 'edik':
+    elif request.GET.get('first_name') == 'edit':
         context['first_name_edit'] = True
+    elif request.GET.get('set_day') == 'edit':
+        context['set_day_edit'] = True
     return render(request, 'Homepage/user_account.html', context=context)
 
 
@@ -417,79 +398,3 @@ def edit_account(request):
     return HttpResponseRedirect('user_account')
 # ___________end block with user_____________
 
-
-def ajax_path(request):
-    response = {
-        'message': 'Здарова отец ' + request.POST['a']
-    }
-
-    return JsonResponse(response)
-
-
-def test_fn(request):
-    mod = SpentMoney.objects.all()
-    numb = int(request.POST['a']) - 9
-    answer = {
-        'b': numb,
-        'c': request.POST['a']
-    }
-    return JsonResponse(answer)
-
-
-def two_list(ls1, ls2):
-    ls3 = []
-    for i in ls1:
-        if i in ls2:
-            ls3.append(i)
-    return ls3
-
-
-def server(request):
-    if 'id' in request.POST:
-        Person3.objects.filter(
-            id=request.POST['id']
-        ).update(
-            name=request.POST['name'],
-            age=int(request.POST['age'])
-        )
-        return JsonResponse({'status': 'OK'})
-    else:
-        ls = []
-        id_new = request.GET['id']
-        Person3.objects.filter(id=id_new)
-        for i in Person3.objects.filter(id=id_new):
-            ls.append({'name': i.name, 'age': i.age})
-        return JsonResponse({'people': ls})
-
-
-# def experiment(request):
-#     size = 300000
-#     slice_size = 500
-#     Person3.objects.all().delete()
-#     for _ in range(int(size / slice_size)):
-#         slice = []
-#         for _ in range(slice_size):
-#             slice.append(
-#                 Person3(
-#                     name=str(random.randint(1, 1000)),
-#                     credit_card_number=str(
-#                         random.randint(10**70, 10**80)
-#                     )
-#                 )
-#             )
-#         Person3.objects.bulk_create(slice, slice_size)
-#
-#     sum = 0
-#     for _ in range(100):
-#         start = datetime.now()
-#         list(Person3.objects.filter(
-#             credit_card_number=random.randint(
-#                 10**70, 10**80
-#             )
-#         ))
-#         delta = (datetime.now() - start).total_seconds()
-#         sum = sum + delta
-#     print("Время выполнения 100 запрсосов: " +
-#           str(sum) + ' секунд')
-#
-#     return HttpResponse('Ok')
