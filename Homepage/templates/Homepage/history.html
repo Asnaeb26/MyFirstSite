@@ -38,8 +38,6 @@
                             {{ product.comment|default:'<Комментарий не введен>'}}
                         </td>
                         <td><b style="color: #43b05c">{{ product.add_income }}</b> BYN
-
-
                         {% if edit_id != product.id %}
                             <a href="history?id={{ product.id }}"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
                             {% else %}
