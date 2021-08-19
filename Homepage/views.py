@@ -1,17 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 from Homepage.models import *
 import json
-import random
-import pickle
-from pymemcache import Client as CacheClient
 import datetime
-from django.utils.translation import ugettext as _, activate
-import matplotlib.pyplot as plt
-import numpy as np
-import time
 import requests
 
 
@@ -39,10 +31,11 @@ def date(request):
     current_year = datetime.date.today().year
     current_month = datetime.date.today().month
     direction = request.GET.get('direction')
+    month = request.GET.get('month')
     if direction == 'next':
-        current_month = current_month + 1
+        current_month = int(month) + 1
     elif direction == 'back':
-        current_month = current_month - 1
+        current_month = int(month) - 1
 
     if client.set_day > DAYS_IN_MONTH[current_month]:
         selected_day = DAYS_IN_MONTH[current_month]
@@ -55,6 +48,7 @@ def date(request):
 
 def homepage(request):
     dollar, abbr = exchange_rates(request)
+    direction = request.GET.get('direction')
     first_day, last_day, current_month = date(request)
     client = user_data(request)
     hello, name = greeting(request)
@@ -63,6 +57,7 @@ def homepage(request):
                'photo': client,
                'first_day': first_day,
                'last_day': last_day,
+               'current_month': current_month,
                }
     if request.GET.get('what') == 'show_income':
         # доходы
@@ -91,6 +86,11 @@ def homepage(request):
         context['categories'] = categories
         context['total'] = round(total, 2)
         context['total_usd'] = total_usd
+        # if direction == 'back':
+        #     context['graphic_url'] = 'pie_fn?direction=back'
+        # elif direction == 'next':
+        #     context['graphic_url'] = 'pie_fn?direction=next'
+        # else:
         context['graphic_url'] = 'pie_fn'
     return render(request, 'Homepage/homepage.html', context)
 
@@ -114,7 +114,7 @@ def pie_fn(request):
         COSTS.append(category_data)
     for token in COSTS:
         percentage = (token['y'] * 100) / TOTAL
-        token['y'] = round(percentage, 1)
+        token['per'] = round(percentage, 1)
 
     return JsonResponse(COSTS, safe=False)
 
@@ -138,7 +138,7 @@ def pie_fn_income(request):
         COSTS.append(source_data)
     for token in COSTS:
         percentage = (token['y'] * 100) / TOTAL
-        token['y'] = round(percentage, 1)
+        token['per'] = round(percentage, 1)
 
     return JsonResponse(COSTS, safe=False)
 
@@ -310,7 +310,18 @@ def planning(request):
 
 
 def task2(request):
-    return render(request, 'Homepage/user_account.html')
+    response_a = request.GET.get('a')
+    response_b = request.GET.get('b')
+    response_c = request.GET.__getlist__()
+    now_date = datetime.datetime.now()
+    if response_b == 'what':
+        if response_a == 'back':
+            now_date -= datetime.timedelta(days=10)
+        else:
+            now_date += datetime.timedelta(days=10)
+            # last_day = first_day + datetime.timedelta(days=DAYS_IN_MONTH[(current_month + 1)])
+    return HttpResponse(now_date)
+
 # ------block with user------------
 
 

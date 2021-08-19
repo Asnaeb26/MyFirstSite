@@ -14,20 +14,22 @@ window.graphic_url = "{{ graphic_url }}";
 <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
     <div style="text-align: center;"></div>
     <div class="mx-auto">
-        <div style="text-align: center; margin-bottom: 20px;"><b>{{ hello }}, {{ name }}!</b></div>
+        <div style="text-align: center; margin-bottom: 20px;"><b>{{ hello }}, {{ name|capfirst }}!</b></div>
+
         <div class="current_month mx-auto">
-            <a href="homepage?direction=back" id="back" style="margin-right: 15%">
+
+            <a href="homepage?direction=back&month={{ current_month }}" id="back" style="margin-right: 15%">
                 <img src="{% static 'Homepage/back.png' %}">
             </a>
-            {{ first_day }} - {{ last_day }}
+            {{ first_day| date:'j E' }} - {{ last_day| date:'j E Y' }}
             <a href="user_account">
                 <img src="{% static 'Homepage/gear.svg' %}"style="width: 30px; fill: white">
             </a>
-            <a href="homepage?direction=next" style="margin-left: 15%">
+            <a href="homepage?direction=next&month={{ current_month }}" style="margin-left: 15%">
                 <img src="{% static 'Homepage/next.png' %}">
             </a>
-
         </div>
+
         <div class="forms" >
         {% if income %}
             <form action="add_income" method="POST" style="text-align: center; margin-top: 20px">
@@ -53,6 +55,7 @@ window.graphic_url = "{{ graphic_url }}";
                 </button>
             </form>
             <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+
         {% else %}
             <form action="add_money" method="POST" style="text-align: center; margin-top: 20px">
                 <label><b>РАСХОДЫ <a href="?what=show_income">
@@ -81,8 +84,8 @@ window.graphic_url = "{{ graphic_url }}";
         </div>
         <div style="text-align: center; font-size: 20px; margin: 10px;">
             Суммарные
-            {% if income %} доходы {% else %} расходы {% endif %} за текущий месяц {{ total }} <b>BYN</b> | {{ total_usd }} <b>USD</b>
-
+            {% if income %} доходы {% else %} расходы {% endif %}
+            за текущий месяц {{ total }} <b>BYN</b> | {{ total_usd }} <b>USD</b>
         </div>
     </div>
 

@@ -4,16 +4,18 @@ $(document).ready(function(){
         function (response) {
         var options = {
             data: [{
-                type: "pie",
+                type: "doughnut",
                 startAngle: 40,
-                toolTipContent: "<b>{label}</b>: {y}%",
+                explodeOnClick: false,
+                toolTipContent: "<b>{label}</b>: {per}%",
                 showInLegend: "true",
                 legendText: "{label}",
                 indexLabelFontSize: 16,
-                indexLabel: "{label} - {y}%",
+                indexLabel: "{label} - {per}% ({y} BYN)",
                 dataPoints: response
             }]
         };
+        console.log(response)
         $("#chartContainer").CanvasJSChart(options);
         }
 );
