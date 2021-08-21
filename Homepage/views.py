@@ -59,9 +59,9 @@ def homepage(request):
                'last_day': last_day,
                'current_month': current_month,
                }
-    if request.GET.get('what') == 'show_income':
+    if request.GET.get('action') == 'show_income':
         # доходы
-        all_income = Income.objects.filter(user=request.user, time_input__gte=first_day)
+        all_income = Income.objects.filter(user=request.user, time_input__gte=first_day, time_input__lte=last_day)
         total = 0
         sources = []
         for j in all_income:
@@ -78,7 +78,7 @@ def homepage(request):
         # расходы
         total = 0
         categories = []
-        for i in SpentMoney.objects.filter(user=request.user, time_input__gte=first_day):
+        for i in SpentMoney.objects.filter(user=request.user, time_input__gte=first_day, time_input__lte=last_day):
             categories.append(i.category)
             total += i.add_money
         total_usd = round((total/dollar), 2)
@@ -98,31 +98,33 @@ def homepage(request):
 def pie_fn(request):
     first_day, last_day, current_month = date(request)
     user_id = request.user.id
-    current_costs = SpentMoney.objects.filter(user_id=user_id, time_input__gte=first_day)
+    current_costs = SpentMoney.objects.filter(user_id=user_id, time_input__gte=first_day, time_input__lte=last_day)
     categories = []
     TOTAL = 0
     COSTS = []
-    for i in current_costs:
-        categories.append(i.category)
-    categories = list(set(categories))
-    for category in categories:
-        total_for_category = 0
-        for j in current_costs.filter(category=category):
-            total_for_category += j.add_money
-        TOTAL += total_for_category
-        category_data = {'y': float(total_for_category), 'label': category}
-        COSTS.append(category_data)
-    for token in COSTS:
-        percentage = (token['y'] * 100) / TOTAL
-        token['per'] = round(percentage, 1)
-
+    if len(current_costs) != 0:
+        for i in current_costs:
+            categories.append(i.category)
+        categories = list(set(categories))
+        for category in categories:
+            total_for_category = 0
+            for j in current_costs.filter(category=category):
+                total_for_category += j.add_money
+            TOTAL += total_for_category
+            category_data = {'y': float(total_for_category), 'label': category}
+            COSTS.append(category_data)
+        for token in COSTS:
+            percentage = (token['y'] * 100) / TOTAL
+            token['per'] = round(percentage, 1)
+    else:
+        COSTS = [{'y': 1, 'label': 'Пусто', 'p': 100}]
     return JsonResponse(COSTS, safe=False)
 
 
 def pie_fn_income(request):
     first_day, last_day, current_month = date(request)
     user_id = request.user.id
-    current_costs = Income.objects.filter(user_id=user_id, time_input__gte=first_day)
+    current_costs = Income.objects.filter(user_id=user_id, time_input__gte=first_day, time_input__lte=last_day)
     sources = []
     TOTAL = 0
     COSTS = []
@@ -197,13 +199,20 @@ def edit_spending(request):
     return HttpResponseRedirect('history')
 
 
+def edit_income(request):
+    current_id = request.POST['id']
+    new_income = float(request.POST['new_income'])
+    Income.objects.filter(id=current_id).update(add_income=new_income)
+    return HttpResponseRedirect('history?action=show_income')
+
+
 def history(request):
     first_day, last_day, set_month = date(request)
     client = user_data(request)
     context = {
         'photo': client
     }
-    if request.GET.get('what') == 'show_income':
+    if request.GET.get('action') == 'show_income':
         current_costs = Income.objects.filter(user_id=request.user.id, time_input__gte=first_day)
         total_for_category = 0
         ls = []
@@ -287,7 +296,7 @@ def del_spending(request):
 
 def del_income(request):
     Income.objects.filter(id=request.GET['id']).delete()
-    return HttpResponseRedirect('history?what=show_income')
+    return HttpResponseRedirect('history?action=show_income')
 
 
 def exchange_rates(request):

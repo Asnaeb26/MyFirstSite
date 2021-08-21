@@ -24,6 +24,7 @@ urlpatterns = [
     path('sort_of', views.sort_of),
     path('sort_of_income', views.sort_of_income),
     path('edit_spending', views.edit_spending),
+    path('edit_income', views.edit_income),
     path('pie_fn', views.pie_fn),
     path('pie_fn_income', views.pie_fn_income),
     path('date', views.date),

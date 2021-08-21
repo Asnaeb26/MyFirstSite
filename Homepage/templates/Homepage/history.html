@@ -6,14 +6,14 @@
     {% if income %}
         <h2>История доходов  <a href="history"><img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a></h2>
         <div class="sort">
-        <a style="text-decoration: none" href="history?what=show_income">Все категории | </a>
+        <a style="text-decoration: none" href="history?action=show_income">Все категории | </a>
         {% for source in sources %}
             <a style="text-decoration: none" href="sort_of_income?source={{ source }}">{{ source }} | </a>
         {% endfor %}
         </div>
     {#------------ЕСЛИ Расходы------------------#}
     {% else %}
-        <h2>История расходов <a href="history?what=show_income"><img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a></h2>
+        <h2>История расходов <a href="history?action=show_income"><img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a></h2>
         <div class="sort">
             <a style="text-decoration: none" href="history">Все категории | </a>
             {% for category in categories %}
@@ -39,14 +39,13 @@
                         </td>
                         <td><b style="color: #43b05c">{{ product.add_income }}</b> BYN
                         {% if edit_id != product.id %}
-                            <a href="history?id={{ product.id }}"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
-                            {% else %}
-                            <a href="history"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
-{#                            {% if edit_id == product.id %}#}
+                            <a href="history?id={{ product.id }}&action=show_income"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
+                        {% else %}
+                            <a href="history?action=show_income"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
                                 <div id="categories">
-                                    <form action="edit_spending" method="post">
+                                    <form action="edit_income" method="post">
                                         <input type="hidden" name="id" value="{{ product.id }}">
-                                        <input type="number" step="0.01" min="1" name="new_spending" id="new_spending" placeholder="" style="width: 50px; height: 20px;">
+                                        <input type="number" step="0.01" min="1" name="new_income" id="new_income" placeholder="" style="width: 50px; height: 20px;">
                                         <button type="submit" style="font-size: 15px;">ОК</button>
                                     </form>
                                 </div>
@@ -65,7 +64,20 @@
                         <td>
                             {{ product.comment|default:'<Комментарий не введен>'}}
                         </td>
-                        <td><b style="color: #43b05c">{{ product.add_income }}</b> BYN</td>
+                        <td><b style="color: #43b05c">{{ product.add_income }}</b> BYN
+                        {% if edit_id != product.id %}
+                            <a href="history?id={{ product.id }}&action=show_income"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
+                        {% else %}
+                            <a href="history?action=show_income"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
+                                <div id="categories">
+                                    <form action="edit_income" method="post">
+                                        <input type="hidden" name="id" value="{{ product.id }}">
+                                        <input type="number" step="0.01" min="1" name="new_income" id="new_income" placeholder="" style="width: 50px; height: 20px;">
+                                        <button type="submit" style="font-size: 15px;">ОК</button>
+                                    </form>
+                                </div>
+                        {% endif %}
+                        </td>
                         <td>({{ product.source }})</td>
                         <td>({{ product.time_input }})</td>
                         <td>
@@ -114,17 +126,16 @@
                         <td><b style="color: #43b05c">{{ product.add_money }}</b> BYN
                         {% if edit_id != product.id %}
                             <a href="history?id={{ product.id }}"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
-                            {% else %}
+                        {% else %}
                             <a href="history"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
-{#                            {% if edit_id == product.id %}#}
-                                <div id="categories">
-                                    <form action="edit_spending" method="post">
-                                        <input type="hidden" name="id" value="{{ product.id }}">
-                                        <input type="number" step="0.01" min="1" name="new_spending" id="new_spending" placeholder="" style="width: 50px; height: 20px;">
-                                        <button type="submit" style="font-size: 15px;">ОК</button>
-                                    </form>
-                                </div>
-                            {% endif %}
+                            <div id="categories">
+                                <form action="edit_spending" method="post">
+                                    <input type="hidden" name="id" value="{{ product.id }}">
+                                    <input type="number" step="0.01" min="1" name="new_spending" id="new_spending" placeholder="" style="width: 50px; height: 20px;">
+                                    <button type="submit" style="font-size: 15px;">ОК</button>
+                                </form>
+                            </div>
+                        {% endif %}
                         </td>
                         <td>({{ product.category }})</td>
                         <td>({{ product.time_input }})</td>
