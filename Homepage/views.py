@@ -67,7 +67,7 @@ def homepage(request):
         for j in all_income:
             sources.append(j.source)
             total += j.add_income
-        total_usd = round((total/dollar), 2)
+        total_usd = round((total / dollar), 2)
         sources = set(sources)
         context['income'] = True
         context['total'] = round(total, 2)
@@ -81,7 +81,7 @@ def homepage(request):
         for i in SpentMoney.objects.filter(user=request.user, time_input__gte=first_day, time_input__lte=last_day):
             categories.append(i.category)
             total += i.add_money
-        total_usd = round((total/dollar), 2)
+        total_usd = round((total / dollar), 2)
         categories = set(categories)
         context['categories'] = categories
         context['total'] = round(total, 2)
@@ -331,6 +331,7 @@ def task2(request):
             # last_day = first_day + datetime.timedelta(days=DAYS_IN_MONTH[(current_month + 1)])
     return HttpResponse(now_date)
 
+
 # ------block with user------------
 
 
@@ -417,4 +418,3 @@ def edit_account(request):
         User.objects.filter(username=request.user).update(first_name=request.POST['new_first_name'])
     return HttpResponseRedirect('user_account')
 # ___________end block with user_____________
-

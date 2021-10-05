@@ -1,4 +1,4 @@
-# from Homepage.models import User
+from Homepage.models import User
 import requests
 
 
@@ -12,8 +12,8 @@ import requests
 
 
 def client():
-    request.post(
-        'http://127.0.0.1:8000/get_user',
+    requests.post(
+        'http://127.0.0.1:8000/planning',
         {
             'id': 1,
             'name': 'Олег',

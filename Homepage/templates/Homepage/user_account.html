@@ -28,7 +28,7 @@
     Электронная почта - <b>{{ User_info.email }}</b><br>
     Дата регистрации - <b>{{ User_info.date_joined }}</b><br>
     Начало месяца - <b>{{ set_day }}</b>
-    {% if set_day_edit != True %}
+{% if   set_day_edit != True %}
     <a href="user_account?set_day=edit"><img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"></a>
     {% elif set_day_edit %}
     <a href="user_account"><img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"></a>
