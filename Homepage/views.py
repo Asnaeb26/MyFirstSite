@@ -184,9 +184,9 @@ def add_income(request):
     else:
         category = request.POST['new_category']
     Income(
-        add_income=request.POST['add_income'],
+        add_money=request.POST['add_money'],
         category=category,
-        comment=request.POST['comment'],
+        comments=request.POST['comments'],
         user_id=request.user.id
     ).save()
     return HttpResponseRedirect('homepage')

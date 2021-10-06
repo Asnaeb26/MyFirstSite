@@ -2,7 +2,7 @@
 {% block body %}
 {% load static %}
 <script src="{% static "/js/history_script.js" %}"></script>
-    {#------------ЕСЛИ ДОХОДЫ------------------#}
+    <!--    ЕСЛИ ДОХОДЫ-->
     {% if income %}
         <h2>История доходов  <a href="history"><img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a></h2>
         <div class="sort">
@@ -11,7 +11,7 @@
             <a style="text-decoration: none" href="sort_of_income?source={{ source }}">{{ source }} | </a>
         {% endfor %}
         </div>
-    {#------------ЕСЛИ Расходы------------------#}
+    <!--    ЕСЛИ РАСХОДЫ-->
     {% else %}
         <h2>История расходов <a href="history?action=show_income"><img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a></h2>
         <div class="sort">
