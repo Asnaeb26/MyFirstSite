@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-import sqlite3
+# import sqlite3
 
 
 class SpentMoney(models.Model):
