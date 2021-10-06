@@ -63,16 +63,16 @@ def homepage(request):
         # доходы
         all_income = Income.objects.filter(user=request.user, time_input__gte=first_day, time_input__lte=last_day)
         total = 0
-        categorys = []
+        category = []
         for j in all_income:
-            categorys.append(j.category)
+            category.append(j.category)
             total += j.add_income
         total_usd = round((total / dollar), 2)
-        categorys = set(categorys)
+        category = set(category)
         context['income'] = True
         context['total'] = round(total, 2)
         context['total_usd'] = total_usd
-        context['categorys'] = categorys
+        context['category'] = category
         context['graphic_url'] = 'pie_fn_income'
     else:
         # расходы
@@ -125,13 +125,13 @@ def pie_fn_income(request):
     first_day, last_day, current_month = date(request)
     user_id = request.user.id
     current_costs = Income.objects.filter(user_id=user_id, time_input__gte=first_day, time_input__lte=last_day)
-    categorys = []
+    category = []
     TOTAL = 0
     COSTS = []
     for i in current_costs:
-        categorys.append(i.category)
-    categorys = list(set(categorys))
-    for category in categorys:
+        category.append(i.category)
+    category = list(set(category))
+    for category in category:
         total_for_category = 0
         for j in current_costs.filter(category=category):
             total_for_category += j.add_income
@@ -220,8 +220,8 @@ def history(request):
             ls.append(i.category)
             total_for_category += i.add_income
             total_for_category = round(float(total_for_category), 2)
-        categorys = set(ls)
-        context['categorys'] = categorys
+        category = set(ls)
+        context['category'] = category
         context['total_for_category'] = total_for_category
         context['products'] = current_costs
         context['income'] = True
@@ -274,14 +274,14 @@ def sort_of_income(request):
     ls = []
     for i in current_user:
         ls.append(i.category)
-    categorys = set(ls)
+    category = set(ls)
     selected_category = current_user.filter(category=request.GET['category'])
     total_for_category = 0
     for cost in selected_category:
         total_for_category += cost.add_income
     context = {
-        'sort_categorys': selected_category,
-        'categorys': categorys,
+        'sort_category': selected_category,
+        'category': category,
         'photo': client,
         'income': True,
         'total_for_category': total_for_category
