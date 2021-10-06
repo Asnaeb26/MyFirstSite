@@ -63,16 +63,16 @@ def homepage(request):
         # доходы
         all_income = Income.objects.filter(user=request.user, time_input__gte=first_day, time_input__lte=last_day)
         total = 0
-        sources = []
+        categorys = []
         for j in all_income:
-            sources.append(j.source)
+            categorys.append(j.category)
             total += j.add_income
         total_usd = round((total / dollar), 2)
-        sources = set(sources)
+        categorys = set(categorys)
         context['income'] = True
         context['total'] = round(total, 2)
         context['total_usd'] = total_usd
-        context['sources'] = sources
+        context['categorys'] = categorys
         context['graphic_url'] = 'pie_fn_income'
     else:
         # расходы
@@ -125,19 +125,19 @@ def pie_fn_income(request):
     first_day, last_day, current_month = date(request)
     user_id = request.user.id
     current_costs = Income.objects.filter(user_id=user_id, time_input__gte=first_day, time_input__lte=last_day)
-    sources = []
+    categorys = []
     TOTAL = 0
     COSTS = []
     for i in current_costs:
-        sources.append(i.source)
-    sources = list(set(sources))
-    for source in sources:
-        total_for_source = 0
-        for j in current_costs.filter(source=source):
-            total_for_source += j.add_income
-        TOTAL += total_for_source
-        source_data = {'y': float(total_for_source), 'label': source}
-        COSTS.append(source_data)
+        categorys.append(i.category)
+    categorys = list(set(categorys))
+    for category in categorys:
+        total_for_category = 0
+        for j in current_costs.filter(category=category):
+            total_for_category += j.add_income
+        TOTAL += total_for_category
+        category_data = {'y': float(total_for_category), 'label': category}
+        COSTS.append(category_data)
     for token in COSTS:
         percentage = (token['y'] * 100) / TOTAL
         token['per'] = round(percentage, 1)
@@ -179,13 +179,13 @@ def add_money(request):
 
 
 def add_income(request):
-    if request.POST['new_source'] == '':
-        source = request.POST['source']
+    if request.POST['new_category'] == '':
+        category = request.POST['category']
     else:
-        source = request.POST['new_source']
+        category = request.POST['new_category']
     Income(
         add_income=request.POST['add_income'],
-        source=source,
+        category=category,
         comment=request.POST['comment'],
         user_id=request.user.id
     ).save()
@@ -217,11 +217,11 @@ def history(request):
         total_for_category = 0
         ls = []
         for i in current_costs:
-            ls.append(i.source)
+            ls.append(i.category)
             total_for_category += i.add_income
             total_for_category = round(float(total_for_category), 2)
-        sources = set(ls)
-        context['sources'] = sources
+        categorys = set(ls)
+        context['categorys'] = categorys
         context['total_for_category'] = total_for_category
         context['products'] = current_costs
         context['income'] = True
@@ -273,15 +273,15 @@ def sort_of_income(request):
     current_user = Income.objects.filter(user_id=request.user.id, time_input__gte=first_day)
     ls = []
     for i in current_user:
-        ls.append(i.source)
-    sources = set(ls)
-    selected_source = current_user.filter(source=request.GET['source'])
+        ls.append(i.category)
+    categorys = set(ls)
+    selected_category = current_user.filter(category=request.GET['category'])
     total_for_category = 0
-    for cost in selected_source:
+    for cost in selected_category:
         total_for_category += cost.add_income
     context = {
-        'sort_sources': selected_source,
-        'sources': sources,
+        'sort_categorys': selected_category,
+        'categorys': categorys,
         'photo': client,
         'income': True,
         'total_for_category': total_for_category
