@@ -1,77 +1,58 @@
 {% extends "Homepage/index.html" %}
 {% block body %}
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/homepage.css' %}">
-<script type="application/javascript">
-window.graphic_url = "{{ graphic_url }}";
-</script>
-<script src="{% static "/js/Homepage_script.js" %}"></script>
-<script src="{% static "/js/jquery.jqplot.min.js" %}"></script>
-<script src="{% static "/css/jquery.jqplot.css" %}"></script>
-<script src="{% static "/js/jqplot.pieRenderer.js" %}"></script>
-<script src="{% static "/js/pie.js" %}"></script>
-<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
-<script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
-    <div style="text-align: center;"></div>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+    <script type="application/javascript">
+        window.graphic_url = "{{ graphic_url }}";
+    </script>
+    <script src="{% static "/js/Homepage_script.js" %}"></script>
+    <script src="{% static "/js/jquery.jqplot.min.js" %}"></script>
+    <script src="{% static "/css/jquery.jqplot.css" %}"></script>
+    <script src="{% static "/js/jqplot.pieRenderer.js" %}"></script>
+    <script src="{% static "/js/pie.js" %}"></script>
+    <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
     <div class="mx-auto">
         <div style="text-align: center; margin-bottom: 20px;"><b>{{ hello }}, {{ name|capfirst }}!</b></div>
         <div class="current_month mx-auto">
-
             <a href="homepage?direction=back&month={{ current_month }}" id="back" style="margin-right: 15%">
                 <img src="{% static 'Homepage/back.png' %}">
             </a>
             {{ first_day| date:'j E' }} - {{ last_day| date:'j E Y' }}
             <a href="user_account">
-                <img src="{% static 'Homepage/gear.svg' %}"style="width: 30px; fill: white">
+                <img src="{% static 'Homepage/gear.svg' %}" style="width: 30px; fill: white">
             </a>
             <a href="homepage?direction=next&month={{ current_month }}" style="margin-left: 15%">
                 <img src="{% static 'Homepage/next.png' %}">
             </a>
         </div>
 
-        <div class="forms" >
-<!--        {% if income %}-->
-<!--            <form action="add_income" method="POST" style="text-align: center; margin-top: 20px">-->
-<!--                <label><b>ДОХОДЫ <a href="homepage">-->
-<!--                    <img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a></b>-->
-<!--                </label><br><br>-->
-<!--                <input type="number" step="0.01" min="1" id="add_income" name="add_income" placeholder="Введите сумму" required><br>-->
-<!--                <input type="text" id="category" name="category" placeholder="Комментарий"><br>-->
-<!--                <select name="category" required>-->
-<!--                    {% for category in categories %}-->
-<!--                        {% if category != ''%}-->
-<!--                            <option value="{{ category }}">{{ category }}</option>-->
-<!--                        {% endif %}-->
-<!--                    {% endfor %}-->
-<!--                    <option disabled selected>Выберите источник</option>-->
-<!--                </select><br>-->
-<!--                <button type="button" class="submit-button" id="plus_button">Add category</button><br>-->
-<!--                <div id="category">-->
-<!--                    <input type="text" name="new_category" placeholder="Добавьте источник"><br>-->
-<!--                </div>-->
-<!--                <button type="submit" class="submit_button">-->
-<!--                    <img src="{% static "Homepage/plus.svg" %}" style="width: 50px">-->
-<!--                </button>-->
-<!--            </form>-->
-<!--            <div id="chartContainer" style="height: 300px; width: 100%;"></div>-->
-<!--        {% else %}-->
-            <form action="add_money" method="POST" style="text-align: center; margin-top: 20px">
-                <label><b>РАСХОДЫ
-<!--                    <a href="?action=show_income">-->
-<!--                    <img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a>-->
-                </b>
-                </label><br><br>
-                <input type="number" step="0.01" min="1" id="add_money" name="add_money" placeholder="Введите сумму" required><br>
+        <div class="money_forms" style="text-align: center; margin-top: 20px">
+            <label>
+                {% if income %}
+                    <b>ДОХОДЫ <a href="/homepage">
+                {% else %}
+                    <b>РАСХОДЫ <a href="?action=show_income">
+                {% endif %}
+                <img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a></b>
+            </label><br><br>
+            <form action="add_money" method="POST">
+                <input type="number" step="0.01" min="1" id="add_money" name="add_money" placeholder="Введите сумму"
+                       required><br>
+                {% if income %}
+                <input type="hidden" name="type" value='Income'>
+                {% endif %}
                 <input type="text" id="comments" name="comments" placeholder="Комментарий"><br>
-                <select name="category" required>  <!--Выбор категорию из существующих-->
+                <select name="category" required>
                     {% for category in categories %}
-                        {% if category != ''%}
-                        <option value="{{ category }}">{{ category }}</option>
+                        {% if category != '' %}
+                            <option value="{{ category }}">{{ category }}</option>
                         {% endif %}
                     {% endfor %}
                     <option disabled selected>Выберите категорию</option>
                 </select><br>
-                <button type="button" class="submit-button" id="plus_button">Add new category</button><br>
+                <button type="button" class="submit-button" id="plus_button">Add new category</button>
+                <br>
                 <div id="category">
                     <input type="text" name="new_category" placeholder="Добавьте категорию"><br>
                 </div>
@@ -80,7 +61,6 @@ window.graphic_url = "{{ graphic_url }}";
                 </button>
             </form>
             <div id="chartContainer" style="height: 300px; width: 100%;"></div>
-<!--        {% endif %}-->
         </div>
         <div style="text-align: center; font-size: 20px; margin: 10px;">
             Суммарные

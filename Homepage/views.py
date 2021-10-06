@@ -60,38 +60,26 @@ def homepage(request):
                'current_month': current_month,
                }
     if request.GET.get('action') == 'show_income':
-        # доходы
-        all_income = Income.objects.filter(user=request.user, time_input__gte=first_day, time_input__lte=last_day)
-        total = 0
-        category = []
-        for j in all_income:
-            category.append(j.category)
-            total += j.add_income
-        total_usd = round((total / dollar), 2)
-        category = set(category)
+        model = Income
         context['income'] = True
-        context['total'] = round(total, 2)
-        context['total_usd'] = total_usd
-        context['category'] = category
-        context['graphic_url'] = 'pie_fn_income'
     else:
-        # расходы
-        total = 0
-        categories = []
-        for i in SpentMoney.objects.filter(user=request.user, time_input__gte=first_day, time_input__lte=last_day):
-            categories.append(i.category)
-            total += i.add_money
-        total_usd = round((total / dollar), 2)
-        categories = set(categories)
-        context['categories'] = categories
-        context['total'] = round(total, 2)
-        context['total_usd'] = total_usd
-        # if direction == 'back':
-        #     context['graphic_url'] = 'pie_fn?direction=back'
-        # elif direction == 'next':
-        #     context['graphic_url'] = 'pie_fn?direction=next'
-        # else:
-        context['graphic_url'] = 'pie_fn'
+        model = SpentMoney
+    total = 0
+    categories = []
+    for i in model.objects.filter(user=request.user, time_input__gte=first_day, time_input__lte=last_day):
+        categories.append(i.category)
+        total += i.add_money
+    total_usd = round((total / dollar), 2)
+    categories = set(categories)
+    context['categories'] = categories
+    context['total'] = round(total, 2)
+    context['total_usd'] = total_usd
+    # if direction == 'back':
+    #     context['graphic_url'] = 'pie_fn?direction=back'
+    # elif direction == 'next':
+    #     context['graphic_url'] = 'pie_fn?direction=next'
+    # else:
+    context['graphic_url'] = 'pie_fn'
     return render(request, 'Homepage/homepage.html', context)
 
 
@@ -169,7 +157,8 @@ def add_money(request):
         category = request.POST['category']
     else:
         category = request.POST['new_category']
-    SpentMoney(
+    model = request.POST.get('type', 'SpentMoney')
+    model(!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         add_money=request.POST['add_money'],
         category=category,
         comments=request.POST['comments'],
