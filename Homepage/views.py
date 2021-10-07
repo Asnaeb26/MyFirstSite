@@ -157,22 +157,11 @@ def add_money(request):
         category = request.POST['category']
     else:
         category = request.POST['new_category']
-    model = request.POST.get('type', 'SpentMoney')
-    model(!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        add_money=request.POST['add_money'],
-        category=category,
-        comments=request.POST['comments'],
-        user_id=request.user.id
-    ).save()
-    return HttpResponseRedirect('homepage')
-
-
-def add_income(request):
-    if request.POST['new_category'] == '':
-        category = request.POST['category']
+    if request.POST.get('type') == 'Income':
+        model = Income
     else:
-        category = request.POST['new_category']
-    Income(
+        model = SpentMoney
+    model(
         add_money=request.POST['add_money'],
         category=category,
         comments=request.POST['comments'],
@@ -202,79 +191,22 @@ def history(request):
         'photo': client
     }
     if request.GET.get('action') == 'show_income':
-        current_costs = Income.objects.filter(user_id=request.user.id, time_input__gte=first_day)
-        total_for_category = 0
-        ls = []
-        for i in current_costs:
-            ls.append(i.category)
-            total_for_category += i.add_income
-            total_for_category = round(float(total_for_category), 2)
-        category = set(ls)
-        context['category'] = category
-        context['total_for_category'] = total_for_category
-        context['products'] = current_costs
+        model = Income
         context['income'] = True
-        if request.GET.get('id'):
-            context['edit_id'] = int(request.GET.get('id'))
     else:
-        current_costs = SpentMoney.objects.filter(user_id=request.user.id, time_input__gte=first_day)
-        total_for_category = 0
-        ls = []
-        for i in current_costs:
-            ls.append(i.category)
-            total_for_category += i.add_money
-            total_for_category = round(float(total_for_category), 2)
-        categories = set(ls)
-        context['categories'] = categories
-        context['total_for_category'] = total_for_category
-        context['products'] = current_costs
-        if request.GET.get('id'):
-            context['edit_id'] = int(request.GET.get('id'))
-    return render(request, 'Homepage/history.html', context)
-
-
-def sort_of(request):
-    first_day, last_day, set_month = date(request)
-    client = user_data(request)
-    current_user = SpentMoney.objects.filter(user_id=request.user.id, time_input__gte=first_day)
-    ls = []
-    for i in current_user:
-        ls.append(i.category)
-    categories = set(ls)
-    selected_category = current_user.filter(category=request.GET['category'])
+        model = SpentMoney
+    current_costs = model.objects.filter(user_id=request.user.id, time_input__gte=first_day)
+    categories = [item.category for item in current_costs]
+    if request.GET.get('condition') == 'sorted':
+        current_costs = current_costs.filter(category=request.GET['category'])
     total_for_category = 0
-    for cost in selected_category:
-        total_for_category += cost.add_money
-        total_for_category = round(float(total_for_category), 2)
-    context = {
-        'sort_categories': selected_category,
-        'categories': categories,
-        'photo': client,
-        'total_for_category': total_for_category
-    }
-
-    return render(request, 'Homepage/history.html', context)
-
-
-def sort_of_income(request):
-    first_day, last_day, set_month = date(request)
-    client = user_data(request)
-    current_user = Income.objects.filter(user_id=request.user.id, time_input__gte=first_day)
-    ls = []
-    for i in current_user:
-        ls.append(i.category)
-    category = set(ls)
-    selected_category = current_user.filter(category=request.GET['category'])
-    total_for_category = 0
-    for cost in selected_category:
-        total_for_category += cost.add_income
-    context = {
-        'sort_category': selected_category,
-        'category': category,
-        'photo': client,
-        'income': True,
-        'total_for_category': total_for_category
-    }
+    for i in current_costs:
+        total_for_category += i.add_money
+    context['categories'] = sorted(set(categories))
+    context['total_for_category'] = round(float(total_for_category), 2)
+    context['products'] = current_costs
+    if request.GET.get('id'):
+        context['edit_id'] = int(request.GET.get('id'))
     return render(request, 'Homepage/history.html', context)
 
 
