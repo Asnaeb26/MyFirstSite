@@ -60,46 +60,18 @@
             <td>({{ product.category }})</td>
             <td>({{ product.time_input }})</td>
             <td>
-                <a style="text-decoration: none; color: red " href="del_spending?id={{ product.id }}"><img
-                        alt="удалить" src="{% static 'Homepage/remove.png' %}" style="height: 20px"></a>
+                {% if income %}
+                <a href="del_spending?action=del_income&id={{ product.id }}" style="text-decoration: none; color: red ">
+                {% else %}
+                <a href="del_spending?id={{ product.id }}" style="text-decoration: none; color: red ">
+                {% endif %}
+                    <img alt="удалить" src="{% static 'Homepage/remove.png' %}" style="height: 20px"></a>
             </td>
         </tr>
         {% endfor %}
-{#        {% for product in sort_categories %}#}
-{#            <tr>#}
-{#                <td>#}
-{#                    {{ product.comments|default:'<Комментарий не введен>' }}#}
-{#                </td>#}
-{#                <td><b style="color: #43b05c">{{ product.add_money }}</b> BYN#}
-{#                    {% if edit_id != product.id %}#}
-{#                        <a href="history?id={{ product.id }}"> <img alt="ред." src="{% static 'Homepage/edit.png' %}"#}
-{#                                                                    style="height: 15px"> </a>#}
-{#                    {% else %}#}
-{#                        <a href="history"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px">#}
-{#                        </a>#}
-{#                        <div id="categories">#}
-{#                            <form action="edit_spending" method="post">#}
-{#                                <input type="hidden" name="id" value="{{ product.id }}">#}
-{#                                <input type="number" step="0.01" min="1" name="new_spending" id="new_spending"#}
-{#                                       placeholder="" style="width: 50px; height: 20px;">#}
-{#                                <button type="submit" style="font-size: 15px;">ОК</button>#}
-{#                            </form>#}
-{#                        </div>#}
-{#                    {% endif %}#}
-{#                </td>#}
-{#                <td>({{ product.category }})</td>#}
-{#                <td>({{ product.time_input }})</td>#}
-{#                <td>#}
-{#                    <a href="del_spending?id={{ product.id }}"><img alt="удалить"#}
-{#                                                                    src="{% static 'Homepage/remove.png' %}"#}
-{#                                                                    style="height: 20px"></a>#}
-{#                </td>#}
-{#            </tr>#}
-{#        {% endfor %}#}
         <tr>
             <td style="text-decoration: overline"><b>Итого</b></td>
             <td style="text-decoration: overline"><b style="color: #43b05c">{{ total_for_category }}</b> BYN</td>
         </tr>
-        {#            {% endif %}#}
     </table>
 {% endblock %}

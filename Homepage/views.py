@@ -211,13 +211,12 @@ def history(request):
 
 
 def del_spending(request):
-    SpentMoney.objects.filter(id=request.GET['id']).delete()
-    return HttpResponseRedirect('history')
-
-
-def del_income(request):
-    Income.objects.filter(id=request.GET['id']).delete()
-    return HttpResponseRedirect('history?action=show_income')
+    if request.GET.get('action') == 'del_income':
+        Income.objects.filter(id=request.GET['id']).delete()
+        return HttpResponseRedirect('history?action=show_income')
+    else:
+        SpentMoney.objects.filter(id=request.GET['id']).delete()
+        return HttpResponseRedirect('history')
 
 
 def exchange_rates(request):
@@ -237,22 +236,6 @@ def planning(request):
         'photo': client
     }
     return render(request, 'Homepage/planning.html', context)
-
-
-def task2(request):
-    response_a = request.GET.get('a')
-    response_b = request.GET.get('b')
-    response_c = request.GET.__getlist__()
-    now_date = datetime.datetime.now()
-    if response_b == 'what':
-        if response_a == 'back':
-            now_date -= datetime.timedelta(days=10)
-        else:
-            now_date += datetime.timedelta(days=10)
-            # last_day = first_day + datetime.timedelta(days=DAYS_IN_MONTH[(current_month + 1)])
-    return HttpResponse(now_date)
-
-
 # ------block with user------------
 
 
