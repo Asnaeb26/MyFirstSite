@@ -19,9 +19,7 @@ urlpatterns = [
     path('add_money', views.add_money),
     path('del_spending', views.del_spending),
     path('edit_spending', views.edit_spending),
-    path('edit_income', views.edit_income),
     path('pie_fn', views.pie_fn),
-    path('pie_fn_income', views.pie_fn_income),
     path('date', views.date),
     path('set_day', views.set_day),
 ]

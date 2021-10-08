@@ -4,26 +4,28 @@
     <script src="{% static "/js/history_script.js" %}"></script>
     <!--    ЕСЛИ ДОХОДЫ-->
     <h2>
-    {% if income %}
-        История доходов <a href="history">
-    {% else %}
-        История расходов <a href="history?action=show_income">
-    {% endif %}
-        <img alt="о"src="{% static 'Homepage/exchange.png' %}"style="height: 20px"></a></h2>
-        <div class="sort">
-            {% if income %}
+        {% if income %}
+            История доходов <a href="history">
+        {% else %}
+            История расходов <a href="history?action=show_income">
+        {% endif %}
+        <img alt="о" src="{% static 'Homepage/exchange.png' %}" style="height: 20px"></a></h2>
+    <div class="sort">
+        {% if income %}
             <a style="text-decoration: none" href="history?action=show_income">Все категории | </a>
-            {% else %}
+        {% else %}
             <a style="text-decoration: none" href="history">Все категории | </a>
+        {% endif %}
+        {% for category in categories %}
+            {% if income %}
+                <a href="history?condition=sorted&action=show_income&category={{ category }}"
+                   style="text-decoration: none">{{ category }} | </a>
+            {% else %}
+                <a href="history?condition=sorted&category={{ category }}" style="text-decoration: none">{{ category }}
+                    | </a>
             {% endif %}
-                {% for category in categories %}
-                    {% if income %}
-                    <a href="history?condition=sorted&action=show_income&category={{ category }}" style="text-decoration: none">{{ category }} | </a>
-                    {% else %}
-                    <a href="history?condition=sorted&category={{ category }}" style="text-decoration: none">{{ category }} | </a>
-                    {% endif %}
-                {% endfor %}
-        </div>
+        {% endfor %}
+    </div>
     {#------------Начало Таблицы------------------#}
     <table style="width: 60%">
         <tr>
@@ -36,38 +38,52 @@
 
         {% for product in products %}
 
-        <tr>
-            <td>
-                {{ product.comments|default:'<Комментарий не введен>' }}
-            </td>
-            <td>
-                <b style="color: #43b05c">{{ product.add_money }}</b> BYN
-                {% if edit_id != product.id %}
-                    <a href="history?id={{ product.id }}"> <img alt="ред." src="{% static 'Homepage/edit.png' %}"
-                                                                style="height: 15px"> </a>
-                {% else %}
-                    <a href="history"> <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"></a>
-                    <div id="categories">
-                        <form action="edit_spending" method="post">
-                            <input type="hidden" name="id" value="{{ product.id }}">
-                            <input type="number" step="0.01" min="1" name="new_spending" id="new_spending"
-                                   placeholder="" style="width: 50px; height: 20px;">
-                            <button type="submit" style="font-size: 15px;">ОК</button>
-                        </form>
-                    </div>
-                {% endif %}
-            </td>
-            <td>({{ product.category }})</td>
-            <td>({{ product.time_input }})</td>
-            <td>
-                {% if income %}
-                <a href="del_spending?action=del_income&id={{ product.id }}" style="text-decoration: none; color: red ">
-                {% else %}
-                <a href="del_spending?id={{ product.id }}" style="text-decoration: none; color: red ">
-                {% endif %}
+            <tr>
+                <td>
+                    {{ product.comments|default:'<Комментарий не введен>' }}
+                </td>
+                <td>
+                    <b style="color: #43b05c">{{ product.add_money }}</b> BYN
+                    {% if edit_id != product.id %}
+                        {% if income %}
+                            <a href="history?id={{ product.id }}&action=show_income">
+                        {% else %}
+                            <a href="history?id={{ product.id }}">
+                        {% endif %}
+                    <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"> </a>
+                    {% else %}
+                        {% if income %}
+                            <a href="history?action=show_income">
+                        {% else %}
+                            <a href="history">
+                        {% endif %}
+                    <img alt="ред." src="{% static 'Homepage/edit.png' %}" style="height: 15px"></a>
+                        <div id="categories">
+                            {% if income %}
+                                <form action="edit_spending?condition=edit_income" method="post">
+                            {% else %}
+                                <form action="edit_spending" method="post">
+                            {% endif %}
+                                <input type="hidden" name="id" value="{{ product.id }}">
+                                <input type="number" step="0.01" min="1" name="new_spending" id="new_spending"
+                                       placeholder="" style="width: 50px; height: 20px;">
+                                <button type="submit" style="font-size: 15px;">ОК</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </td>
+                <td>({{ product.category }})</td>
+                <td>({{ product.time_input }})</td>
+                <td>
+                    {% if income %}
+                        <a href="del_spending?action=del_income&id={{ product.id }}"
+                           style="text-decoration: none; color: red ">
+                    {% else %}
+                        <a href="del_spending?id={{ product.id }}" style="text-decoration: none; color: red ">
+                    {% endif %}
                     <img alt="удалить" src="{% static 'Homepage/remove.png' %}" style="height: 20px"></a>
-            </td>
-        </tr>
+                </td>
+            </tr>
         {% endfor %}
         <tr>
             <td style="text-decoration: overline"><b>Итого</b></td>

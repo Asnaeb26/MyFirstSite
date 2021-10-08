@@ -79,7 +79,7 @@ def homepage(request):
     # elif direction == 'next':
     #     context['graphic_url'] = 'pie_fn?direction=next'
     # else:
-    context['graphic_url'] = 'pie_fn'
+    #     context['graphic_url'] = 'pie_fn'
     return render(request, 'Homepage/homepage.html', context)
 
 
@@ -106,30 +106,6 @@ def pie_fn(request):
             token['per'] = round(percentage, 1)
     else:
         COSTS = [{'y': 1, 'label': 'Пусто', 'p': 100}]
-    return JsonResponse(COSTS, safe=False)
-
-
-def pie_fn_income(request):
-    first_day, last_day, current_month = date(request)
-    user_id = request.user.id
-    current_costs = Income.objects.filter(user_id=user_id, time_input__gte=first_day, time_input__lte=last_day)
-    category = []
-    TOTAL = 0
-    COSTS = []
-    for i in current_costs:
-        category.append(i.category)
-    category = list(set(category))
-    for category in category:
-        total_for_category = 0
-        for j in current_costs.filter(category=category):
-            total_for_category += j.add_income
-        TOTAL += total_for_category
-        category_data = {'y': float(total_for_category), 'label': category}
-        COSTS.append(category_data)
-    for token in COSTS:
-        percentage = (token['y'] * 100) / TOTAL
-        token['per'] = round(percentage, 1)
-
     return JsonResponse(COSTS, safe=False)
 
 
@@ -173,15 +149,12 @@ def add_money(request):
 def edit_spending(request):
     current_id = request.POST['id']
     new_spending = float(request.POST['new_spending'])
-    SpentMoney.objects.filter(id=current_id).update(add_money=new_spending)
-    return HttpResponseRedirect('history')
-
-
-def edit_income(request):
-    current_id = request.POST['id']
-    new_income = float(request.POST['new_income'])
-    Income.objects.filter(id=current_id).update(add_income=new_income)
-    return HttpResponseRedirect('history?action=show_income')
+    if request.GET.get('condition') == 'edit_income':
+        Income.objects.filter(id=current_id).update(add_money=new_spending)
+        return HttpResponseRedirect('history?action=show_income')
+    else:
+        SpentMoney.objects.filter(id=current_id).update(add_money=new_spending)
+        return HttpResponseRedirect('history')
 
 
 def history(request):
