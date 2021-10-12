@@ -62,8 +62,12 @@ def homepage(request):
     if request.GET.get('action') == 'show_income':
         model = Income
         context['income'] = True
+        context['graphic_url'] = 'pie_fn?action=show_income'
     else:
         model = SpentMoney
+        context['graphic_url'] = 'pie_fn'
+    if request.GET.get('action') == 'show_error':
+        context['category_error'] = True
     total = 0
     categories = []
     for i in model.objects.filter(user=request.user, time_input__gte=first_day, time_input__lte=last_day):
@@ -75,25 +79,26 @@ def homepage(request):
     context['total'] = round(total, 2)
     context['total_usd'] = total_usd
     # if direction == 'back':
-    #     context['graphic_url'] = 'pie_fn?direction=back'
+    #     context['graphic_url'] = 'pie_fn'
     # elif direction == 'next':
-    #     context['graphic_url'] = 'pie_fn?direction=next'
-    # else:
     #     context['graphic_url'] = 'pie_fn'
     return render(request, 'Homepage/homepage.html', context)
 
 
 def pie_fn(request):
+    if request.GET.get('action') == 'show_income':
+        model = Income
+    else:
+        model = SpentMoney
     first_day, last_day, current_month = date(request)
-    user_id = request.user.id
-    current_costs = SpentMoney.objects.filter(user_id=user_id, time_input__gte=first_day, time_input__lte=last_day)
+    current_costs = model.objects.filter(user_id=request.user.id, time_input__gte=first_day, time_input__lte=last_day)
     categories = []
     TOTAL = 0
     COSTS = []
     if len(current_costs) != 0:
         for i in current_costs:
             categories.append(i.category)
-        categories = list(set(categories))
+        categories = list(sorted(set(categories)))
         for category in categories:
             total_for_category = 0
             for j in current_costs.filter(category=category):
@@ -129,21 +134,28 @@ def greeting(request):
 
 
 def add_money(request):
-    if request.POST['new_category'] == '':
-        category = request.POST['category']
-    else:
-        category = request.POST['new_category']
     if request.POST.get('type') == 'Income':
         model = Income
     else:
         model = SpentMoney
+    try:
+        if request.POST['new_category'] == '':
+            category = request.POST['category']
+        else:
+            category = request.POST['new_category']
+    except Exception as e:
+        return HttpResponseRedirect('homepage?action=show_error')
+
     model(
         add_money=request.POST['add_money'],
         category=category,
         comments=request.POST['comments'],
         user_id=request.user.id
     ).save()
-    return HttpResponseRedirect('homepage')
+    if model == SpentMoney:
+        return HttpResponseRedirect('homepage')
+    else:
+        return HttpResponseRedirect('homepage?action=show_income')
 
 
 def edit_spending(request):
@@ -213,7 +225,11 @@ def planning(request):
 
 
 def login2(request):
-    return render(request, 'Homepage/Log_in.html')
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('homepage')
+        # return render(request, 'Homepage/homepage.html')
+    else:
+        return render(request, 'Homepage/Log_in.html')
 
 
 def do_registration(request):

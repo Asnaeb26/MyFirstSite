@@ -6,9 +6,6 @@
         window.graphic_url = "{{ graphic_url }}";
     </script>
     <script src="{% static "/js/Homepage_script.js" %}"></script>
-    <script src="{% static "/js/jquery.jqplot.min.js" %}"></script>
-    <script src="{% static "/css/jquery.jqplot.css" %}"></script>
-    <script src="{% static "/js/jqplot.pieRenderer.js" %}"></script>
     <script src="{% static "/js/pie.js" %}"></script>
     <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
     <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
@@ -45,18 +42,23 @@
                 <input type="text" id="comments" name="comments" placeholder="Комментарий"><br>
                 <select name="category" required>
                     {% for category in categories %}
-                        {% if category != '' %}
-                            <option value="{{ category }}">{{ category }}</option>
+                        {% if category != ''%}
+                        <option value="{{ category }}">{{ category }}</option>
                         {% endif %}
                     {% endfor %}
-                    <option disabled selected>Выберите категорию</option>
+                    <option disabled selected >Выберите категорию</option>
                 </select><br>
+                {% if category_error%}
+                    <p style="color: red">
+                        Выберите категорию из списка или создайте новую
+                    </p>
+                {% endif %}
                 <button type="button" class="submit-button" id="plus_button">Add new category</button>
                 <br>
-                <div id="category">
-                    <input type="text" name="new_category" placeholder="Добавьте категорию"><br>
+                <div id="new_category_input">
+                    <input type="text" name="new_category" id="new_category" placeholder="Добавьте категорию"><br>
                 </div>
-                <button type="submit" class="submit_button">
+                <button type="submit" id="submit" class="submit_button">
                     <img src="{% static "Homepage/plus.svg" %}" style="width: 50px">
                 </button>
             </form>

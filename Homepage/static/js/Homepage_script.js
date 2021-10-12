@@ -1,5 +1,6 @@
 $(document).ready(function() {
         $('#plus_button').click(function (){
-            $('#category').slideToggle('fast')
+            $('#new_category_input').slideToggle('fast')
         })
+
 });
