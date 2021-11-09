@@ -37,8 +37,11 @@
           {% if error %}
               <p style="color: red">Ваши пароли не совпадают</p>
           {% endif %}
+          {% if uniq_error %}
+              <p style="color: red">Такой юзер или электронная почта уже существует</p>
+          {% endif %}
         <button class="w-100 btn btn-lg btn-primary" type="submit">Зарегистрироваться</button>
-        Если у вас есть аккаунт, то
+        Если у вас уже есть аккаунт, то
         <button formaction="/login" class="w-100 btn btn-lg btn-primary">Войти в аккаунт</button>
         <p class="mt-5 mb-3 text-muted">© 2021</p>
       </form>

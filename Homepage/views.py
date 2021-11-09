@@ -5,7 +5,7 @@ from Homepage.models import *
 import json
 import datetime
 import requests
-
+from django.db import IntegrityError
 
 def user_data(request):
     user_id = User.objects.filter(username=request.user)[0].id
@@ -237,20 +237,27 @@ def do_registration(request):
 
 
 def register(request):
-    if request.POST['password'] == request.POST['confirm_password']:
-        user = User.objects.create_user(
-            request.POST['username'],
-            password=request.POST['password'],
-            email=request.POST['email'],
-            first_name='',
-            last_name='',
-        )
-        client = Client(user_id=user.id, avatar='cat.png')
-        client.save()
-        login(request, user)
-        return HttpResponseRedirect('homepage')
-    else:
-        context = {'error': True}
+    try:
+        if User.objects.filter(email=request.POST['email']):
+            context = {'uniq_error': True}
+            return render(request, 'Homepage/registration.html', context)
+        if request.POST['password'] == request.POST['confirm_password']:
+            user = User.objects.create_user(
+                request.POST['username'],
+                password=request.POST['password'],
+                email=request.POST['email'],
+                first_name='',
+                last_name='',
+            )
+            client = Client(user_id=user.id, avatar='cat.png')
+            client.save()
+            login(request, user)
+            return HttpResponseRedirect('homepage')
+        else:
+            context = {'error': True}
+            return render(request, 'Homepage/registration.html', context)
+    except IntegrityError:
+        context = {'uniq_error': True}
         return render(request, 'Homepage/registration.html', context)
 
 

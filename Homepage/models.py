@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-# import sqlite3
 
 
 class SpentMoney(models.Model):
@@ -23,4 +22,3 @@ class Client(models.Model):
     avatar = models.ImageField()
     set_day = models.IntegerField(default=1)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
