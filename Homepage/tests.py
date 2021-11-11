@@ -2,6 +2,7 @@ import re
 import math
 from collections import namedtuple
 
+
 # Задача 1
 def accum(text):
     up = 2
@@ -207,7 +208,4 @@ class Rectangle(Figure):
 # r2 = Rectangle('rec2', 5, 6)
 # r3 = Rectangle('rec3', 5, 2)
 
-
-text = input()
-n = int(input())
 
