@@ -7,6 +7,7 @@ import datetime
 import requests
 from django.db import IntegrityError
 
+
 def user_data(request):
     user_id = User.objects.filter(username=request.user)[0].id
     client = Client.objects.filter(user_id=user_id)[0]
@@ -55,7 +56,7 @@ def homepage(request):
     context = {'hello': hello,
                'name': name,
                'photo': client,
-               'first_day': first_day,
+               'first_day': first_day, # Год - месяц - день
                'last_day': last_day,
                'current_month': current_month,
                }
@@ -78,10 +79,6 @@ def homepage(request):
     context['categories'] = categories
     context['total'] = round(total, 2)
     context['total_usd'] = total_usd
-    # if direction == 'back':
-    #     context['graphic_url'] = 'pie_fn'
-    # elif direction == 'next':
-    #     context['graphic_url'] = 'pie_fn'
     return render(request, 'Homepage/homepage.html', context)
 
 
@@ -90,7 +87,8 @@ def pie_fn(request):
         model = Income
     else:
         model = SpentMoney
-    first_day, last_day, current_month = date(request)
+    first_day = datetime.datetime.strptime(request.POST.get('start'), "%Y-%m-%d")
+    last_day = datetime.datetime.strptime(request.POST.get('finish'), "%Y-%m-%d")
     current_costs = model.objects.filter(user_id=request.user.id, time_input__gte=first_day, time_input__lte=last_day)
     categories = []
     TOTAL = 0

@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $.post(
-       window.graphic_url, {},
+       window.graphic_url, {start: window.start, finish: window.finish},
         function (response) {
         var options = {
             data: [{

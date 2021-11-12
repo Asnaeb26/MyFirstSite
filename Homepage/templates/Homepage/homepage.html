@@ -4,6 +4,8 @@
     <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
     <script type="application/javascript">
         window.graphic_url = "{{ graphic_url }}";
+        window.start = '{{ first_day|date:'Y-m-d' }}';
+        window.finish = '{{ last_day|date:'Y-m-d' }}';
     </script>
     <script src="{% static "/js/Homepage_script.js" %}"></script>
     <script src="{% static "/js/pie.js" %}"></script>
@@ -23,7 +25,6 @@
                 <img src="{% static 'Homepage/next.png' %}">
             </a>
         </div>
-
         <div class="money_forms" style="text-align: center; margin-top: 20px">
             <label>
                 {% if income %}
@@ -37,18 +38,18 @@
                 <input type="number" step="0.01" min="1" id="add_money" name="add_money" placeholder="Введите сумму"
                        required><br>
                 {% if income %}
-                <input type="hidden" name="type" value='Income'>
+                    <input type="hidden" name="type" value='Income'>
                 {% endif %}
                 <input type="text" id="comments" name="comments" placeholder="Комментарий"><br>
                 <select name="category" required>
                     {% for category in categories %}
-                        {% if category != ''%}
-                        <option value="{{ category }}">{{ category }}</option>
+                        {% if category != '' %}
+                            <option value="{{ category }}">{{ category }}</option>
                         {% endif %}
                     {% endfor %}
-                    <option disabled selected >Выберите категорию</option>
+                    <option disabled selected>Выберите категорию</option>
                 </select><br>
-                {% if category_error%}
+                {% if category_error %}
                     <p style="color: red">
                         Выберите категорию из списка или создайте новую
                     </p>
