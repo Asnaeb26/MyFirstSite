@@ -35,15 +35,23 @@ def date(request):
     month = request.GET.get('month')
     if direction == 'next':
         current_month = int(month) + 1
+        if current_month == len(DAYS_IN_MONTH):
+            current_month = 1
+            current_year += 1
     elif direction == 'back':
         current_month = int(month) - 1
-
+        if current_month < 1:
+            current_month = 12
+            current_year -= 1
     if client.set_day > DAYS_IN_MONTH[current_month]:
         selected_day = DAYS_IN_MONTH[current_month]
     else:
         selected_day = client.set_day
     first_day = datetime.date(current_year, current_month, selected_day)
-    last_day = first_day + datetime.timedelta(days=DAYS_IN_MONTH[(current_month + 1)])
+    next_month = current_month + 1
+    if next_month >= len(DAYS_IN_MONTH):
+        next_month = 1
+    last_day = first_day + datetime.timedelta(days=DAYS_IN_MONTH[next_month])
     return first_day, last_day, current_month
 
 
