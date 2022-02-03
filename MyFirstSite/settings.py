@@ -119,7 +119,7 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = 'c:\\Users\\Lenovo\\PycharmProjects\\MyFirstSite\\Homepage\\images'
+MEDIA_ROOT = BASE_DIR / 'Homepage/images/'
 
 
 # Default primary key field type
