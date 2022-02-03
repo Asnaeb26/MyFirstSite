@@ -1,11 +1,13 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.contrib.auth import authenticate, login, logout
-from Homepage.models import *
-import json
 import datetime
+import json
+
 import requests
+from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
+
+from Homepage.models import Client, Income, SpentMoney, User
 
 
 def user_data(request):
@@ -57,7 +59,7 @@ def date(request):
 
 def homepage(request):
     dollar, abbr = exchange_rates(request)
-    direction = request.GET.get('direction')
+    # direction = request.GET.get('direction')
     first_day, last_day, current_month = date(request)
     client = user_data(request)
     hello, name = greeting(request)
@@ -79,7 +81,9 @@ def homepage(request):
         context['category_error'] = True
     total = 0
     categories = []
-    for i in model.objects.filter(user=request.user, time_input__gte=first_day, time_input__lte=last_day):
+    for i in model.objects.filter(user=request.user,
+                                  time_input__gte=first_day,
+                                  time_input__lte=last_day):
         categories.append(i.category)
         total += i.add_money
     total_usd = round((total / dollar), 2)
@@ -100,7 +104,7 @@ def pie_fn(request):
     current_costs = model.objects.filter(user_id=request.user.id, time_input__gte=first_day, time_input__lte=last_day)
     categories = []
     TOTAL = 0
-    COSTS = []
+    costs = []
     if len(current_costs) != 0:
         for i in current_costs:
             categories.append(i.category)
@@ -111,13 +115,13 @@ def pie_fn(request):
                 total_for_category += j.add_money
             TOTAL += total_for_category
             category_data = {'y': float(total_for_category), 'label': category}
-            COSTS.append(category_data)
-        for token in COSTS:
+            costs.append(category_data)
+        for token in costs:
             percentage = (token['y'] * 100) / TOTAL
             token['per'] = round(percentage, 1)
     else:
-        COSTS = [{'y': 1, 'label': 'Пусто', 'p': 100}]
-    return JsonResponse(COSTS, safe=False)
+        costs = [{'y': 1, 'label': 'Пусто', 'p': 100}]
+    return JsonResponse(costs, safe=False)
 
 
 def greeting(request):
@@ -149,7 +153,7 @@ def add_money(request):
             category = request.POST['category']
         else:
             category = request.POST['new_category']
-    except Exception as e:
+    except Exception:
         return HttpResponseRedirect('homepage?action=show_error')
 
     model(

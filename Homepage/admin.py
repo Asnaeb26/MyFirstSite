@@ -1,8 +1,5 @@
 from django.contrib import admin
-from Homepage.models import *
-# from django.contrib.auth.models import User
+
+from Homepage.models import Client
+
 admin.site.register(Client)
-
-
-# Register your models here.
-
