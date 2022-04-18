@@ -1,13 +1,11 @@
 import datetime
-import json
-
-import requests
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 
 from Homepage.models import Client, Income, SpentMoney, User
+from Homepage import logic
 
 
 def user_data(request):
@@ -28,45 +26,16 @@ def set_day(request):
     return HttpResponseRedirect('user_account')
 
 
-def date(request):
-    DAYS_IN_MONTH = [-1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    client = Client.objects.filter(user_id=request.user.id)[0]
-    current_year = datetime.date.today().year
-    current_month = datetime.date.today().month
-    direction = request.GET.get('direction')
-    month = request.GET.get('month')
-    if direction == 'next':
-        current_month = int(month) + 1
-        if current_month == len(DAYS_IN_MONTH):
-            current_month = 1
-            current_year += 1
-    elif direction == 'back':
-        current_month = int(month) - 1
-        if current_month < 1:
-            current_month = 12
-            current_year -= 1
-    if client.set_day > DAYS_IN_MONTH[current_month]:
-        selected_day = DAYS_IN_MONTH[current_month]
-    else:
-        selected_day = client.set_day
-    first_day = datetime.date(current_year, current_month, selected_day)
-    next_month = current_month + 1
-    if next_month >= len(DAYS_IN_MONTH):
-        next_month = 1
-    last_day = first_day + datetime.timedelta(days=DAYS_IN_MONTH[next_month])
-    return first_day, last_day, current_month
-
-
 def homepage(request):
-    dollar, abbr = exchange_rates(request)
+    dollar, abbr = logic.exchange_rates()
     # direction = request.GET.get('direction')
-    first_day, last_day, current_month = date(request)
+    first_day, last_day, current_month = logic.date(request)
     client = user_data(request)
-    hello, name = greeting(request)
+    hello, name = logic.greeting(request)
     context = {'hello': hello,
                'name': name,
                'photo': client,
-               'first_day': first_day, # Год - месяц - день
+               'first_day': first_day,  # Год - месяц - день
                'last_day': last_day,
                'current_month': current_month,
                }
@@ -124,25 +93,6 @@ def pie_fn(request):
     return JsonResponse(costs, safe=False)
 
 
-def greeting(request):
-    user = User.objects.filter(username=request.user)[0]
-    name = user.first_name
-    if name == '':
-        name = request.user
-    now = str(datetime.datetime.now())
-    time_now = now.split(' ')[1]
-    current_hour = int(time_now.split(':')[0])
-    if 6 <= current_hour <= 11:
-        hello = 'Доброе утро'
-    elif 12 <= current_hour < 18:
-        hello = 'Добрый день'
-    elif 18 <= current_hour < 23:
-        hello = 'Добрый вечер'
-    else:
-        hello = 'Доброй ночи'
-    return hello, name
-
-
 def add_money(request):
     if request.POST.get('type') == 'Income':
         model = Income
@@ -180,7 +130,7 @@ def edit_spending(request):
 
 
 def history(request):
-    first_day, last_day, set_month = date(request)
+    first_day, last_day, set_month = logic.date(request)
     client = user_data(request)
     context = {
         'photo': client
@@ -214,23 +164,17 @@ def del_spending(request):
         return HttpResponseRedirect('history')
 
 
-def exchange_rates(request):
-    response = requests.get('https://www.nbrb.by/api/exrates/rates/431')
-    data = json.loads(response.text)
-    dollar = data['Cur_OfficialRate']
-    abbr = data['Cur_Abbreviation']
-    return dollar, abbr
-
-
 def planning(request):
     client = user_data(request)
-    dollar, abbr = exchange_rates(request)
+    dollar, abbr = logic.exchange_rates()
     context = {
         'dollar': dollar,
         'abbr': abbr,
         'photo': client
     }
     return render(request, 'Homepage/planning.html', context)
+
+
 # ------block with user------------
 
 
@@ -257,8 +201,7 @@ def register(request):
                 password=request.POST['password'],
                 email=request.POST['email'],
                 first_name='',
-                last_name='',
-            )
+                last_name='')
             client = Client(user_id=user.id, avatar='cat.png')
             client.save()
             login(request, user)

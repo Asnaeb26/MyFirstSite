@@ -5,13 +5,9 @@
     <title>Регистрация</title>
     <link rel="stylesheet" type="text/css" href="../../static/css/Log_in.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-{#    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" id="bootstrap-css">#}
-{#    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>#}
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="/static/js/jquery-3.3.1.min.js"></script>
-    <script src="/static/js/task_ajax.js"></script>
-
-<!------ Include the above in your HEAD tag ---------->
+    <script src="/static/js/alert.js"></script>
 </head>
 <body class="text-center">
     <main class="form-signin size-form">
@@ -40,7 +36,7 @@
           {% if uniq_error %}
               <p style="color: red">Такой юзер или электронная почта уже существует</p>
           {% endif %}
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Зарегистрироваться</button>
+        <button class="w-100 btn btn-lg btn-primary" id="Check" type="submit">Зарегистрироваться</button>
         Если у вас уже есть аккаунт, то
         <button formaction="/login" class="w-100 btn btn-lg btn-primary">Войти в аккаунт</button>
         <p class="mt-5 mb-3 text-muted">© 2021</p>

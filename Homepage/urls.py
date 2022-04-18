@@ -20,6 +20,6 @@ urlpatterns = [
     path('del_spending', views.del_spending),
     path('edit_spending', views.edit_spending),
     path('pie_fn', views.pie_fn),
-    path('date', views.date),
+    # path('date', views.date),
     path('set_day', views.set_day),
 ]
