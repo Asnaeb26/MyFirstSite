@@ -89,7 +89,7 @@ def pie_fn(request):
             percentage = (token['y'] * 100) / TOTAL
             token['per'] = round(percentage, 1)
     else:
-        costs = [{'y': 1, 'label': 'Пусто', 'p': 100}]
+        costs = [{'y': 0.1, 'label': 'Пусто', 'p': 100}]
     return JsonResponse(costs, safe=False)
 
 
@@ -105,7 +105,6 @@ def add_money(request):
             category = request.POST['new_category']
     except Exception:
         return HttpResponseRedirect('homepage?action=show_error')
-
     model(
         add_money=request.POST['add_money'],
         category=category,
@@ -164,18 +163,7 @@ def del_spending(request):
         return HttpResponseRedirect('history')
 
 
-def planning(request):
-    client = user_data(request)
-    dollar, abbr = logic.exchange_rates()
-    context = {
-        'dollar': dollar,
-        'abbr': abbr,
-        'photo': client
-    }
-    return render(request, 'Homepage/planning.html', context)
-
-
-# ------block with user------------
+# ------user block------------
 
 
 def login2(request):
@@ -232,17 +220,6 @@ def do_logout(request):
         return HttpResponseRedirect('login')
     else:
         return HttpResponse('Такой пользователь не залогинен')
-
-
-def uniq_user(request):
-    if len(User.objects.filter(username=request.POST['a'])) == 0:
-        exist = 'n'
-    else:
-        exist = 'y'
-    response = {
-        'message': exist
-    }
-    return JsonResponse(response)
 
 
 def user_account(request):

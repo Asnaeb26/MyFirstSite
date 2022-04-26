@@ -23,7 +23,6 @@
       <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
           <a class="me-3 py-2 text-dark text-decoration-none" href="/homepage">Homepage</a>
           <a class="me-3 py-2 text-dark text-decoration-none" href="/history">История</a>
-          <a class="me-3 py-2 text-dark text-decoration-none" href="/planning">Планирование</a>
           {% if request.user.is_authenticated %}
               <button type="button" class="btn btn-outline-primary"><a href="/user_account">
                   <img src="{{ photo.avatar.url }}" style="width: 30px;border: 1px solid #0d6efd; border-radius: 50%">{{ user }}</a>
