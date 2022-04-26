@@ -27,8 +27,9 @@ def set_day(request):
 
 
 def homepage(request):
+    if not request.user.is_authenticated:
+        return render(request, 'Homepage/Log_in.html')
     dollar, abbr = logic.exchange_rates()
-    # direction = request.GET.get('direction')
     first_day, last_day, current_month = logic.date(request)
     client = user_data(request)
     hello, name = logic.greeting(request)
